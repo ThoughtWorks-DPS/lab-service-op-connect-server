@@ -67,4 +67,4 @@ workflows:
             context: << pipeline.parameters.context >>
             name: nonprod-account-credentials
             instance: sandbox
-            key: "op-connect-credentials-file"
+            key: "op-connect-credential-file"

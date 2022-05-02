@@ -9,7 +9,7 @@
     ],
     "secrets": [{
       "name": "OP_SESSION",
-      "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:op-connect-credentials-file"
+      "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:op-connect-credential-file"
     }],
     "essential": true,
     "portMappings": [
