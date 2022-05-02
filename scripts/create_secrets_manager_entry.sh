@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Create a new secret key entry in AWS Secrets Manager if it doesn't already exist.
-export INSTANCE = $1
-export SECRET_KEYNAME = $2
+export INSTANCE=$1
+export SECRET_KEYNAME=$2
 export AWS_DEFAULT_REGION=$(cat environments/$INSTANCE.json | jq -r .aws_region)
 export AWS_ASSUME_ROLE=$(cat environments/$INSTANCE.json | jq -r .aws_assume_role)
 export AWS_ACCOUNT_ID=$(cat environments/$INSTANCE.json | jq -r .aws_account_id)
