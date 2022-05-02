@@ -42,6 +42,9 @@ jobs:
 
   account-level-credentials:
     parameters:
+      instance:
+        description: name of environments file
+        type: string
       key:
         description: name of credential to create
         type: string
@@ -52,7 +55,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: create secretes manager key entry if not already present
-          command: bash scripts/create_secrets_manager_entry.sh << parameters.key >>
+          command: bash scripts/create_secrets_manager_entry.sh << parameters.instance>> << parameters.key >>
 
 workflows:
   version: 2
@@ -63,4 +66,5 @@ workflows:
         - account-level-credentials:
             context: << pipeline.parameters.context >>
             name: nonprod-account-credentials
+            instance: sandbox
             key: "op-connect-credentials-file"
