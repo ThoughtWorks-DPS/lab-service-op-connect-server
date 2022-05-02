@@ -2,13 +2,13 @@ module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "6.10.0"
 
-  name = var.target_group_name
+  name = var.alb_name
 
   load_balancer_type = "application"
 
-  vpc_id             = data.aws_vpc.platform_vpc
-  subnets            = data.aws_subnet_ids.public.ids
-  security_groups    = [] # need sg
+  vpc_id             = data.aws_vpc.platform_vpc.id
+  subnets            = data.aws_subnets.public.ids
+  security_groups    = [module.alb_sg.security_group_id]
 
   # access_logs = {
   #   bucket = "my-alb-logs"
@@ -16,7 +16,7 @@ module "alb" {
 
   target_groups = [
     {
-      name             = "var.target_group_name"
+      name             = var.op_connect_target_group_name
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "ip"
@@ -36,7 +36,7 @@ module "alb" {
     {
       port               = 443
       protocol           = "HTTPS"
-      certificate_arn    = ""  # need cert
+      certificate_arn    = aws_acm_certificate_validation.op_twdps_digital_certificate.certificate_arn
       target_group_index = 0
     }
   ]
@@ -53,76 +53,71 @@ module "alb" {
       }
     }
   ]
-
-  tags = {
-    pipeline = "lab-service-op-connect-server"
-  }
 }
-
 
 module "alb_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.9.0"
 
-  name        = "alb-ssg"
-  vpc_id      = data.aws_vpc.platform_vpc
+  name        = "alb-sg"
+  vpc_id      = data.aws_vpc.platform_vpc.id
 
   ingress_with_cidr_blocks = [
     {
-      from_port   = var.connect_server_port
-      to_port     = var.connect_server_port
+      from_port   = var.connect_api_port
+      to_port     = var.connect_api_port
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 
-  eress_with_cidr_blocks = [
+  egress_with_cidr_blocks = [
     {
-      from_port   = var.connect_server_port
-      to_port     = var.connect_server_port
+      from_port   = var.connect_api_port
+      to_port     = var.connect_api_port
       protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 }
 
+# create certificate
+resource "aws_acm_certificate" "op_twdps_digital" {
+  domain_name       = var.op_connect_url
+  validation_method = "DNS"
+}
 
+data "aws_route53_zone" "hosted_zone" {
+  name = var.hosted_zone
+  private_zone = false
+}
 
+resource "aws_route53_record" "op_twdps_digital_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.op_twdps_digital.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
 
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.hosted_zone.zone_id
+}
 
+resource "aws_acm_certificate_validation" "op_twdps_digital_certificate" {
+  certificate_arn         = aws_acm_certificate.op_twdps_digital.arn
+  validation_record_fqdns = [for record in aws_route53_record.op_twdps_digital_validation : record.fqdn]
+}
 
-# resource "aws_alb" "main" {
-#   name            = "cb-load-balancer"
-#   subnets         = aws_subnet.public.*.id
-#   security_groups = [aws_security_group.lb.id]
-# }
-
-# resource "aws_alb_target_group" "app" {
-#   name        = "cb-target-group"
-#   port        = 80
-#   protocol    = "HTTP"
-#   vpc_id      = aws_vpc.main.id
-#   target_type = "ip"
-
-#   health_check {
-#     healthy_threshold   = "3"
-#     interval            = "30"
-#     protocol            = "HTTP"
-#     matcher             = "200"
-#     timeout             = "3"
-#     path                = var.health_check_path
-#     unhealthy_threshold = "2"
-#   }
-# }
-
-# # Redirect all traffic from the ALB to the target group
-# resource "aws_alb_listener" "front_end" {
-#   load_balancer_arn = aws_alb.main.id
-#   port              = var.app_port
-#   protocol          = "HTTP"
-
-#   default_action {
-#     target_group_arn = aws_alb_target_group.app.id
-#     type             = "forward"
-#   }
-# }
+resource "aws_route53_record" "op_twdps_digital" {
+  zone_id = data.aws_route53_zone.hosted_zone.zone_id
+  name    = var.op_connect_url
+  type    = "A"
+  ttl     = "300"
+  records = [module.alb.lb_dns_name]
+}

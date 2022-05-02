@@ -4,9 +4,10 @@
     "image": "1password/connect-api:${connect_api_version}",
     "cpu": ${connect_api_cpu},
     "memory": ${connect_api_ram},
-    "environment": [
-      {"name": "OP_SESSION", "value": ""}
-    ],
+    "secrets": [{
+      "name": "OP_SESSION",
+      "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:op-connect-credentials-file"
+    }],
     "essential": true,
     "portMappings": [
       {
@@ -16,16 +17,16 @@
     ],
     "mountPoints": [
       {
-        "sourceVolume": "op-connect-api-storage",
+        "sourceVolume": "op-connect-storage",
         "containerPath": "/home/opuser/.op/data"
       }
     ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/ecs/op-connect-api",
+        "awslogs-group": "/ecs/op-connect",
         "awslogs-region": "${aws_region}",
-        "awslogs-stream-prefix": "ecs"
+        "awslogs-stream-prefix": "connect-api"
       }
     }
   }

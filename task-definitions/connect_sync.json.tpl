@@ -5,9 +5,12 @@
     "cpu": ${connect_sync_cpu},
     "memory": ${connect_sync_ram},
     "environment": [
-      {"name": "OP_SESSION", "value": ""},
       {"name": "OP_HTTP_PORT", "value": "8081"}
     ],
+    "secrets": [{
+      "name": "OP_SESSION",
+      "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:op-connect-credentials-file"
+    }],
     "essential": true,
     "portMappings": [
       {
@@ -17,16 +20,16 @@
     ],
     "mountPoints": [
       {
-        "sourceVolume": "op-connect-sync-storage",
+        "sourceVolume": "op-connect-storage",
         "containerPath": "/home/opuser/.op/data"
       }
     ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/ecs/op-connect-sync",
+        "awslogs-group": "/ecs/op-connect",
         "awslogs-region": "${aws_region}",
-        "awslogs-stream-prefix": "ecs"
+        "awslogs-stream-prefix": "connect-sync"
       }
     }
   }

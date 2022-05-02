@@ -1,0 +1,66 @@
+---
+version: 2.1
+
+orbs:
+  terraform: twdps/terraform@0.4.0
+  # used for github-release-notes feature
+  executor-tools: twdps/executor-tools@0.3.0
+
+# ==== global pipeline parameters
+
+parameters:
+  context:
+    description: circleci context for all jobs
+    type: string
+    default: twdps-core-labs-team
+  terraform-version:
+    description: terraform version for all jobs
+    type: string
+    default: "1.1.7"
+  executor-image:
+    description: image to use for terraform runs
+    type: string
+    default: twdps/circleci-kube-ops:alpine-0.4.0
+
+# git push: deploy sandbox
+on-push-main: &on-push-main
+  branches:
+    only: /main/
+  tags:
+    ignore: /.*/
+
+# git tag: release to preview cluster
+on-tag-main: &on-tag-main
+  branches:
+    ignore: /.*/
+  tags:
+    only: /.*/
+
+#commands:
+
+jobs:
+
+  account-level-credentials:
+    parameters:
+      key:
+        description: name of credential to create
+        type: string
+    docker:
+      - image: << pipeline.parameters.executor-image >>
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: create secretes manager key entry if not already present
+          command: bash scripts/create_secrets_manager_entry.sh << parameters.key >>
+
+workflows:
+  version: 2
+
+  lab-service-op-connect-server-pipeline:
+    jobs:
+        # sandbox deployment
+        - account-level-credentials:
+            context: << parameters.pipeline.context >>
+            name: nonprod-account-credentials
+            key: "op-connect-credentials-file"

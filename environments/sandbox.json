@@ -1,0 +1,20 @@
+{
+  "create_acct_cred": "false",
+  "aws_region": "us-east-2",
+  "aws_account_id": "090950721693",
+  "aws_assume_role": "DPSTerraformRole",
+  "platform_vpc_name": "sandbox",
+  "ecs-cluster-name": "op-connect-sandbox",
+  "capacity_providers": "FARGATE_SPOT",
+  "hosted_zone": "twdps.digital",
+  "op_connect_url": "sandbox.op.twdps.digital",
+  "alb_name": "op-connect-api-alb",
+  "op_connect_target_group_name": "op-connect-api-target-group",
+  "connect_api_version": "1.5.2",
+  "connect_api_port": "8080",
+  "connect_api_cpu": "256",
+  "connect_api_ram": "512",
+  "connect_sync_version": "1.5.2",
+  "connect_sync_cpu": "256",
+  "connect_sync_ram": "512"
+}

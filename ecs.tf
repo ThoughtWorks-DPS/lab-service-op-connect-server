@@ -5,9 +5,6 @@ module "ecs" {
 
   name = var.ecs-cluster-name
   container_insights = true
-  capacity_providers = var.capacity_providers
+  capacity_providers = [var.capacity_providers]
 
-  tags = {
-    pipeline = "lab-service-op-connect-server"
-  }
 }
