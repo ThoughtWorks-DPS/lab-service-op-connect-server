@@ -20,7 +20,7 @@ parameters:
   executor-image:
     description: image to use for terraform runs
     type: string
-    default: twdps/circleci-kube-ops:alpine-0.4.0
+    default: twdps/circleci-infra-aws:alpine-1.5.0
 
 # git push: deploy sandbox
 on-push-main: &on-push-main
@@ -61,6 +61,6 @@ workflows:
     jobs:
         # sandbox deployment
         - account-level-credentials:
-            context: << parameters.pipeline.context >>
+            context: << pipeline.parameters.context >>
             name: nonprod-account-credentials
             key: "op-connect-credentials-file"
