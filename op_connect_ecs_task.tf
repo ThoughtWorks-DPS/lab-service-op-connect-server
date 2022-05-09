@@ -1,84 +1,56 @@
-# connect-api deployment
-resource "aws_ecs_task_definition" "op_connect_api" {
+resource "aws_ecs_task_definition" "op_connect" {
   family                   = "op-connect"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = data.template_file.op_connect_api.rendered
+  cpu                      = var.connect_cpu
+  memory                   = var.connect_ram
+  container_definitions    = data.template_file.op_connect.rendered
 
   volume {
-    name = "op-connect-storage"
+    name = "connect-data"
   }
 }
 
-data "template_file" "op_connect_api" {
-  template = file("task-definitions/connect_api.json.tpl")
+data "template_file" "op_connect" {
+  template = file("task-definitions/op_connect.json.tpl")
 
   vars = {
-    connect_api_version        = var.connect_api_version
-    connect_api_cpu            = var.connect_api_cpu
-    connect_api_ram            = var.connect_api_ram
-    aws_region                 = var.aws_region
-    aws_account_id             = var.aws_account_id
-  }
-}
-
-resource "aws_ecs_task_definition" "op_connect_sync" {
-  family                   = "op-connect"
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  container_definitions    = data.template_file.op_connect_sync.rendered
-
-  volume {
-    name = "op-connect-storage"
-  }
-}
-
-data "template_file" "op_connect_sync" {
-  template = file("task-definitions/connect_sync.json.tpl")
-
-  vars = {
-    connect_sync_version       = var.connect_sync_version
-    connect_sync_cpu           = var.connect_sync_cpu
-    connect_sync_ram           = var.connect_sync_ram
-    aws_region                 = var.aws_region
-    aws_account_id             = var.aws_account_id
+    connect_api_version            = var.connect_api_version
+    connect_api_port               = var.connect_api_port
+    connect_sync_version           = var.connect_sync_version
+    connect_credential_secret_name = var.connect_credential_secret_name
+    aws_region                     = var.aws_region
+    aws_account_id                 = var.aws_account_id
   }
 }
 
 resource "aws_ecs_service" "op_connect_api_service" {
   name            = "op-connect-api"
-  cluster         = module.ecs.ecs_cluster_id
+  cluster         = aws_ecs_cluster.ecs.name
+  # cluster         = module.ecs.ecs_cluster_id
 
-  task_definition = aws_ecs_task_definition.op_connect_api.arn
+  # task_definition = aws_ecs_task_definition.op_connect_api.arn
+  task_definition = aws_ecs_task_definition.op_connect.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
     security_groups  = [module.op_connect_sg.security_group_id]
-    subnets          = data.aws_subnets.public.ids
-    assign_public_ip = true
+    subnets          = data.aws_subnets.private.ids
+    assign_public_ip = false
   }
 
   load_balancer {
     target_group_arn = module.alb.target_group_arns[0]
-    container_name   = "op-connect-api"
+    container_name   = "connect-api"
     container_port   = 8080
   }
 
-  deployment_circuit_breaker {
-    enable = true
-    rollback = true
-  }
-
-  tags = {
-    pipeline = "lab-service-op-connect-server"
-  }
-  
   depends_on = [module.alb, aws_iam_role_policy_attachment.ecs_task_execution_role_attachment]
 }
 
+# =================================================================================================
 # ECS task execution role
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "LabOPConnectTaskRole"
@@ -86,8 +58,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 }
 
 resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name        = "test-policy"
-  description = "A test policy"
+  name        = "LabOPConnectTaskRolePolicy"
 
   policy = <<EOF
 {
@@ -110,12 +81,16 @@ resource "aws_iam_policy" "ecs_task_execution_policy" {
             "Action": [
                 "secretsmanager:GetSecretValue"
             ],
-            "Resource": "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:op-connect-credentials-file"
+            "Resource": "*"
         }
     ]
 }
 EOF
 }
+
+# The above initially was using the following:
+# "Resource": "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:${var.connect_credential_secret_name}"
+# however, it would fail saying permission denied
 
 # ECS task execution role policy attachment
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_attachment" {
@@ -151,7 +126,7 @@ module "op_connect_sg" {
       from_port   = var.connect_api_port
       to_port     = var.connect_api_port
       protocol    = "tcp"
-      cidr_blocks = join(",", local.public_cidrs)
+      cidr_blocks = join(",", local.private_cidrs)
     }
   ]
 
@@ -165,16 +140,9 @@ module "op_connect_sg" {
   ]
 }
 
-resource "aws_cloudwatch_log_group" "op_connect" {
-  name = "/ecs/op-connect"
-}
-
-# op credential file
-resource "aws_secretsmanager_secret" "op_connect_credentials_file" {
-  name = "op-connect-credentials-file"
-}
-
+# op credential file secrets manager key creation managed by bash script: scripts/op-connect-credentials.sh
+# update op-connect credential file
 resource "aws_secretsmanager_secret_version" "op_connect_credentials_file" {
-  secret_id     = aws_secretsmanager_secret.op_connect_credentials_file.id
+  secret_id     = data.aws_secretsmanager_secret.op_connect_credentials_file.arn
   secret_string = var.op_credentials_file_base64
 }

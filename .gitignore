@@ -1,2 +1,4 @@
 .terraform/
 .terraform*
+1password*
+op-connect-secret.yaml

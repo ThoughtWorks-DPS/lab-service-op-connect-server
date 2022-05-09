@@ -7,7 +7,7 @@ module "alb" {
   load_balancer_type = "application"
 
   vpc_id             = data.aws_vpc.platform_vpc.id
-  subnets            = data.aws_subnets.public.ids
+  subnets            = data.aws_subnets.private.ids
   security_groups    = [module.alb_sg.security_group_id]
 
   # access_logs = {
@@ -18,16 +18,16 @@ module "alb" {
     {
       name             = var.op_connect_target_group_name
       backend_protocol = "HTTP"
-      backend_port     = 80
+      backend_port     = 8080
       target_type      = "ip"
       health_check     = {
         healthy_threshold   = "3"
         interval            = "30"
         protocol            = "HTTP"
         matcher             = "200"
-        timeout             = "3"
-        unhealthy_threshold = "2"
-        path = "/"
+        timeout             = "5"
+        unhealthy_threshold = "3"
+        path = "/heartbeat"
       }
     }
   ]
@@ -117,7 +117,9 @@ resource "aws_acm_certificate_validation" "op_twdps_digital_certificate" {
 resource "aws_route53_record" "op_twdps_digital" {
   zone_id = data.aws_route53_zone.hosted_zone.zone_id
   name    = var.op_connect_url
-  type    = "A"
+  type    = "CNAME"
   ttl     = "300"
   records = [module.alb.lb_dns_name]
+
+  depends_on = [aws_route53_record.op_twdps_digital_validation, module.alb]
 }
