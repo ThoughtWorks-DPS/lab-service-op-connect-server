@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  terraform: twdps/terraform@0.4.0
+  terraform: twdps/terraform@dev:latest
   # used for github-release-notes feature
   executor-tools: twdps/executor-tools@0.3.0
 
@@ -16,7 +16,7 @@ parameters:
   terraform-version:
     description: terraform version for all jobs
     type: string
-    default: "1.1.7"
+    default: "1.1.9"
   executor-image:
     description: image to use for terraform runs
     type: string
@@ -68,3 +68,27 @@ workflows:
             name: nonprod-account-credentials
             instance: sandbox
             key: "op-connect-credential-file"
+
+        - terraform/plan:
+            name: sandbox-change-plan
+            context: << pipeline.parameters.context >>
+            workspace: sandbox
+            var-file: environments/sandbox.json
+            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            terraform-version: << pipeline.parameters.terraform-version >>
+            filters: *on-push-main
+
+        - approve-sandbox-changes:
+            type: approval
+            requires:
+              - sandbox-change-plan
+            filters: *on-push-main
+
+        - terraform/apply:
+            name: apply-sandbox-changes
+            context: << pipeline.parameters.context >>
+            workspace: sandbox
+            terraform-version: << pipeline.parameters.terraform-version >>
+            requires:
+              - approve-sandbox-changes
+            filters: *on-push-main

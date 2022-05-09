@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# terraform won't gracefully manage idempotent creation of secrets in secret manager. Hence,
+# create it here if it doesn't already exists and then use the terraform apply to set the correct value.
+
 # Create a new secret key entry in AWS Secrets Manager if it doesn't already exist.
 export INSTANCE=$1
 export SECRET_KEYNAME=$2

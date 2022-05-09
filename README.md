@@ -21,7 +21,8 @@ data:
 
 # development
 
-- assumes existing platform-vpc
+
+- assumes use of existing platform-vpc
 - assumes a base64 version of the 1password-credential.json for the server is available in the ENV
 - aws-vault exec dps.nic.cheneweth -- terraform plan -var-file=environments/sandbox.json -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
 
