@@ -14,14 +14,14 @@ data "aws_subnets" "public" {
   }
 }
 
-# data "aws_subnet" "public" {
-#   for_each = toset(data.aws_subnets.public.ids)
-#   id       = each.value
-# }
+data "aws_subnet" "public" {
+  for_each = toset(data.aws_subnets.public.ids)
+  id       = each.value
+}
 
-# locals {
-#   public_cidrs = [for s in data.aws_subnet.public : s.cidr_block]
-# }
+locals {
+  public_cidrs = [for s in data.aws_subnet.public : s.cidr_block]
+}
 
 data "aws_subnets" "private" {
   filter {

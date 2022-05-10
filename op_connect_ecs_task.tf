@@ -126,7 +126,7 @@ module "op_connect_sg" {
       from_port   = var.connect_api_port
       to_port     = var.connect_api_port
       protocol    = "tcp"
-      cidr_blocks = join(",", local.private_cidrs)
+      cidr_blocks = join(",", local.public_cidrs)
     }
   ]
 
