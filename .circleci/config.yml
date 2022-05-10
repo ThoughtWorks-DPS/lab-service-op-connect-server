@@ -9,10 +9,6 @@ orbs:
 # ==== global pipeline parameters
 
 parameters:
-  context:
-    description: circleci context for all jobs
-    type: string
-    default: twdps-core-labs-team
   terraform-version:
     description: terraform version for all jobs
     type: string
@@ -94,9 +90,12 @@ workflows:
 
         - terraform/apply:
             name: apply-sandbox-changes
-            context: << pipeline.parameters.context >>
             workspace: sandbox
+            var-file: environments/sandbox.json
+            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
             terraform-version: << pipeline.parameters.terraform-version >>
+            before-terraform:
+              - set-environment
             requires:
               - approve-sandbox-changes
             filters: *on-push-main
