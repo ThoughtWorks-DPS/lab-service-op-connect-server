@@ -82,6 +82,8 @@ workflows:
             var-file: environments/sandbox.json
             extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
             terraform-version: << pipeline.parameters.terraform-version >>
+            before-terraform:
+              - set-environment
             filters: *on-push-main
 
         - approve-sandbox-changes:
