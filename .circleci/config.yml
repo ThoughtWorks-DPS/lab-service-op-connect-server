@@ -114,5 +114,5 @@ workflows:
             before-terraform:
               - set-environment
             requires:
-              - approve-sandbox-changes
+              - approve-sandbox-destroy
             filters: *on-push-main
