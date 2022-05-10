@@ -98,3 +98,21 @@ workflows:
             requires:
               - approve-sandbox-changes
             filters: *on-push-main
+        
+        - approve-sandbox-destroy:
+            type: approval
+            requires:
+              - sandbox-change-plan
+            filters: *on-push-main
+
+        - terraform/destroy:
+            name: destroy-sandbox-changes
+            workspace: sandbox
+            var-file: environments/sandbox.json
+            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            terraform-version: << pipeline.parameters.terraform-version >>
+            before-terraform:
+              - set-environment
+            requires:
+              - approve-sandbox-changes
+            filters: *on-push-main
