@@ -43,7 +43,7 @@ commands:
     steps:
       - run:
           name: set ~/.terraformrc
-          command: secrethub inject -i tpl/terraformrc.tpl -o ~/.terraformrc
+          command: bash scripts/tf_backend.sh
 
 jobs:
 
