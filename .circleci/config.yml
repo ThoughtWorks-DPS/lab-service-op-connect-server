@@ -78,7 +78,6 @@ workflows:
 
         - terraform/plan:
             name: sandbox-change-plan
-            context: << pipeline.parameters.context >>
             workspace: sandbox
             var-file: environments/sandbox.json
             extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
