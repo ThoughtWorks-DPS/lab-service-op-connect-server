@@ -67,7 +67,6 @@ workflows:
     jobs:
         # sandbox deployment
         - account-level-credentials:
-            context: << pipeline.parameters.context >>
             name: nonprod-account-credentials
             instance: sandbox
             key: "op-connect-credential-file"
