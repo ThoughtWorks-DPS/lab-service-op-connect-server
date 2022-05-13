@@ -119,6 +119,22 @@ workflows:
               - approve-sandbox-destroy
             filters: *on-push-main
 
+        - approve-preview-destroy:
+            type: approval
+            filters: *on-push-main
+
+        - terraform/destroy:
+            name: destroy-preview-changes
+            workspace: preview
+            var-file: environments/preview.json
+            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            terraform-version: << pipeline.parameters.terraform-version >>
+            before-terraform:
+              - set-environment
+            requires:
+              - approve-preview-destroy
+            filters: *on-push-main
+
   lab-service-op-connect-server-preview:
     jobs:
         # production deployment, uses preview cluster network space
