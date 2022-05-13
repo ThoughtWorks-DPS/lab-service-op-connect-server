@@ -64,13 +64,14 @@ jobs:
 workflows:
   version: 2
 
-  lab-service-op-connect-server-pipeline:
+  lab-service-op-connect-server-sandbox:
     jobs:
         # sandbox deployment
         - account-level-credentials:
             name: nonprod-account-credentials
             instance: sandbox
             key: "sandbox-op-connect-credential-file"
+            filters: *on-push-main
 
         - terraform/plan:
             name: sandbox-change-plan
@@ -117,3 +118,40 @@ workflows:
             requires:
               - approve-sandbox-destroy
             filters: *on-push-main
+
+  lab-service-op-connect-server-preview:
+    jobs:
+        # production deployment, uses preview cluster network space
+        - account-level-credentials:
+            name: preview-account-credentials
+            instance: preview
+            key: "op-connect-credential-file"
+            filters: *on-tag-main
+
+        - terraform/plan:
+            name: preview-change-plan
+            workspace: preview
+            var-file: environments/preview.json
+            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            terraform-version: << pipeline.parameters.terraform-version >>
+            before-terraform:
+              - set-environment
+            filters: *on-tag-main
+
+        - approve-preview-changes:
+            type: approval
+            requires:
+              - preview-change-plan
+            filters: *on-tag-main
+
+        - terraform/apply:
+            name: apply-preview-changes
+            workspace: preview
+            var-file: environments/preview.json
+            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            terraform-version: << pipeline.parameters.terraform-version >>
+            before-terraform:
+              - set-environment
+            requires:
+              - approve-preview-changes
+            filters: *on-tag-main
