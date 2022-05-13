@@ -21,7 +21,7 @@
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/ecs/op-connect",
+        "awslogs-group": "/ecs/${cloud_watch_log_group_name}",
         "awslogs-region": "${aws_region}",
         "awslogs-stream-prefix": "connect-api"
       }
@@ -46,7 +46,7 @@
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/ecs/op-connect",
+        "awslogs-group": "/ecs/${cloud_watch_log_group_name}",
         "awslogs-region": "${aws_region}",
         "awslogs-stream-prefix": "connect-sync"
       }

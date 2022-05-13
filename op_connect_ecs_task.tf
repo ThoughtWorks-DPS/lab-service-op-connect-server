@@ -20,6 +20,7 @@ data "template_file" "op_connect" {
     connect_api_port               = var.connect_api_port
     connect_sync_version           = var.connect_sync_version
     connect_credential_secret_name = var.connect_credential_secret_name
+    cloud_watch_log_group_name     = var.ecs-cluster-name
     aws_region                     = var.aws_region
     aws_account_id                 = var.aws_account_id
   }

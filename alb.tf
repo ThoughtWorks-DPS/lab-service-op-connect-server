@@ -10,10 +10,6 @@ module "alb" {
   subnets            = data.aws_subnets.public.ids
   security_groups    = [module.alb_sg.security_group_id]
 
-  # access_logs = {
-  #   bucket = "my-alb-logs"
-  # }
-
   target_groups = [
     {
       name             = var.op_connect_target_group_name
