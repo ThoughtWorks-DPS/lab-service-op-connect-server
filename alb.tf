@@ -55,7 +55,7 @@ module "alb_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.9.0"
 
-  name        = "${platform_vpc_name}-alb-sg"
+  name        = "${var.platform_vpc_name}-alb-sg"
   vpc_id      = data.aws_vpc.platform_vpc.id
 
   ingress_with_cidr_blocks = [

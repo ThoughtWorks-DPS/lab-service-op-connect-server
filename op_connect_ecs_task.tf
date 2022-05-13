@@ -53,12 +53,12 @@ resource "aws_ecs_service" "op_connect_api_service" {
 # =================================================================================================
 # ECS task execution role
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "${platform_vpc_name}LabOPConnectTaskRole"
+  name               = "${var.platform_vpc_name}LabOPConnectTaskRole"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role_policy.json
 }
 
 resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name        = "${platform_vpc_name}LabOPConnectTaskRolePolicy"
+  name        = "${var.platform_vpc_name}LabOPConnectTaskRolePolicy"
 
   policy = <<EOF
 {
@@ -118,7 +118,7 @@ module "op_connect_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.9.0"
 
-  name        = "${platform_vpc_name}-task-ssg"
+  name        = "${var.platform_vpc_name}-task-ssg"
   vpc_id      = data.aws_vpc.platform_vpc.id
 
   ingress_with_cidr_blocks = [
