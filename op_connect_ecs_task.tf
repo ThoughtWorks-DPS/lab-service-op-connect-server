@@ -29,7 +29,6 @@ data "template_file" "op_connect" {
 resource "aws_ecs_service" "op_connect_api_service" {
   name            = "op-connect-api"
   cluster         = aws_ecs_cluster.ecs.name
-  # cluster         = module.ecs.ecs_cluster_id
 
   # task_definition = aws_ecs_task_definition.op_connect_api.arn
   task_definition = aws_ecs_task_definition.op_connect.arn
@@ -54,12 +53,12 @@ resource "aws_ecs_service" "op_connect_api_service" {
 # =================================================================================================
 # ECS task execution role
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "LabOPConnectTaskRole"
+  name               = "${platform_vpc_name}LabOPConnectTaskRole"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role_policy.json
 }
 
 resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name        = "LabOPConnectTaskRolePolicy"
+  name        = "${platform_vpc_name}LabOPConnectTaskRolePolicy"
 
   policy = <<EOF
 {
@@ -119,7 +118,7 @@ module "op_connect_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.9.0"
 
-  name        = "task-ssg"
+  name        = "${platform_vpc_name}-task-ssg"
   vpc_id      = data.aws_vpc.platform_vpc.id
 
   ingress_with_cidr_blocks = [
