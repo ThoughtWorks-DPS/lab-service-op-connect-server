@@ -153,7 +153,7 @@ workflows:
           before-terraform:
             - set-environment
           requires:
-            - approve-sandbox-destroy
+            - approve-sandbox-teardown
           filters: *on-push-main
 
       - approve-preview-teardown:
@@ -169,5 +169,5 @@ workflows:
           before-terraform:
             - set-environment
           requires:
-            - approve-preview-destroy
+            - approve-preview-teardown
           filters: *on-push-main
