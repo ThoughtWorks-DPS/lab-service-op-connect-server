@@ -58,7 +58,8 @@ jobs:
       - setup_remote_docker
       - run:
           name: create secretes manager key entry if not already present
-          command: bash scripts/create_secrets_manager_entry.sh << parameters.instance>> << parameters.key >>
+          command: |
+            bash scripts/create_secrets_manager_entry.sh << parameters.instance>> << parameters.key >>
 
 workflows:
   version: 2
@@ -69,13 +70,13 @@ workflows:
         - account-level-credentials:
             name: nonprod-account-credentials
             instance: sandbox
-            key: "op-connect-credential-file"
+            key: "sandbox-op-connect-credential-file"
 
         - terraform/plan:
             name: sandbox-change-plan
             workspace: sandbox
             var-file: environments/sandbox.json
-            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
             terraform-version: << pipeline.parameters.terraform-version >>
             before-terraform:
               - set-environment
@@ -91,7 +92,7 @@ workflows:
             name: apply-sandbox-changes
             workspace: sandbox
             var-file: environments/sandbox.json
-            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
             terraform-version: << pipeline.parameters.terraform-version >>
             before-terraform:
               - set-environment
@@ -109,7 +110,7 @@ workflows:
             name: destroy-sandbox-changes
             workspace: sandbox
             var-file: environments/sandbox.json
-            extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+            extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
             terraform-version: << pipeline.parameters.terraform-version >>
             before-terraform:
               - set-environment
