@@ -140,12 +140,12 @@ workflows:
 
   lab-service-op-connect-server-teardown:
     jobs:
-      - approve-sandbox-destroy:
+      - approve-sandbox-teardown:
           type: approval
           filters: *on-push-main
 
       - terraform/destroy:
-          name: destroy-sandbox-changes
+          name: delete-sandbox-op-connect-server-resources
           workspace: sandbox
           var-file: environments/sandbox.json
           extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
@@ -156,12 +156,12 @@ workflows:
             - approve-sandbox-destroy
           filters: *on-push-main
 
-      - approve-preview-destroy:
+      - approve-preview-teardown:
           type: approval
           filters: *on-push-main
 
       - terraform/destroy:
-          name: destroy-preview-changes
+          name: delete-preview-op-connect-server-resources
           workspace: preview
           var-file: environments/preview.json
           extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
