@@ -49,6 +49,10 @@ module "alb" {
       }
     }
   ]
+
+  tags = {
+    alb = var.alb_name
+  }
 }
 
 module "alb_sg" {
