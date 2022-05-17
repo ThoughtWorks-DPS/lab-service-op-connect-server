@@ -56,7 +56,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: update datadog cluster monitors
-          command: python scripts/deploy_monitors.py << parameters.env >> << parameters.cluster >> << parameters.instance >>
+          command: python scripts/deploy_dashboard.py
 
   update-monitors:
     parameters:
@@ -80,7 +80,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: update datadog dashboard
-          command: python scripts/deploy_dashboard.py
+          command: python scripts/deploy_monitors.py << parameters.env >> << parameters.cluster >> << parameters.instance >>
 
   account-level-credentials:
     parameters:
