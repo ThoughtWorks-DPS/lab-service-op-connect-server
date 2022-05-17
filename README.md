@@ -9,6 +9,8 @@
   <a href="https://app.circleci.com/pipelines/github/ThoughtWorks-DPS/lab-service-op-connect-server"><img src="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server.svg?style=shield"></a>
 </div>
 <br />
+[![CircleCI](https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main.svg?style=shield&circle-token=5b62dee56a1690eca5a15b8a3ca555f098c306ad)](https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main)
+
 
 Secrethub has been used for a couple years in the DPS lab work. This is because, while it does have an excellent security model, more importantly:
 - It was a saas

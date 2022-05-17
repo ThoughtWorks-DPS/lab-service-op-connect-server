@@ -138,36 +138,39 @@ workflows:
             - approve-preview-changes
           filters: *on-tag-main
 
-  lab-service-op-connect-server-teardown:
-    jobs:
-      - approve-sandbox-teardown:
-          type: approval
-          filters: *on-push-main
 
-      - terraform/destroy:
-          name: delete-sandbox-op-connect-server-resources
-          workspace: sandbox
-          var-file: environments/sandbox.json
-          extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
-          terraform-version: << pipeline.parameters.terraform-version >>
-          before-terraform:
-            - set-environment
-          requires:
-            - approve-sandbox-teardown
-          filters: *on-push-main
+  # uncomment this workflow to do a full teardown of either instance
+  # 
+  # lab-service-op-connect-server-teardown:
+  #   jobs:
+  #     - approve-sandbox-teardown:
+  #         type: approval
+  #         filters: *on-push-main
 
-      - approve-preview-teardown:
-          type: approval
-          filters: *on-push-main
+  #     - terraform/destroy:
+  #         name: delete-sandbox-op-connect-server-resources
+  #         workspace: sandbox
+  #         var-file: environments/sandbox.json
+  #         extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
+  #         terraform-version: << pipeline.parameters.terraform-version >>
+  #         before-terraform:
+  #           - set-environment
+  #         requires:
+  #           - approve-sandbox-teardown
+  #         filters: *on-push-main
 
-      - terraform/destroy:
-          name: delete-preview-op-connect-server-resources
-          workspace: preview
-          var-file: environments/preview.json
-          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-          terraform-version: << pipeline.parameters.terraform-version >>
-          before-terraform:
-            - set-environment
-          requires:
-            - approve-preview-teardown
-          filters: *on-push-main
+  #     - approve-preview-teardown:
+  #         type: approval
+  #         filters: *on-push-main
+
+  #     - terraform/destroy:
+  #         name: delete-preview-op-connect-server-resources
+  #         workspace: preview
+  #         var-file: environments/preview.json
+  #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+  #         terraform-version: << pipeline.parameters.terraform-version >>
+  #         before-terraform:
+  #           - set-environment
+  #         requires:
+  #           - approve-preview-teardown
+  #         filters: *on-push-main
