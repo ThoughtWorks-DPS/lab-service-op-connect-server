@@ -1,0 +1,26 @@
+{
+	"id": 71798060,
+	"name": "EMPC {{ env }} op-connect 5xx errors",
+	"type": "query alert",
+	"query": "sum(last_5m):sum:aws.applicationelb.httpcode_target_5xx{alb:{{ instance }}}.as_count() > 25",
+	"message": "@slack-DPS-lab-preview-alerts Check increase in 5xx errors from op-connect production instance",
+	"tags": [
+		"alb:{{ instance }}"
+	],
+	"options": {
+		"notify_audit": false,
+		"silenced": {},
+		"include_tags": true,
+		"thresholds": {
+			"critical": 25,
+			"critical_recovery": 2
+		},
+		"require_full_window": false,
+		"new_host_delay": 300,
+		"notify_no_data": false,
+		"renotify_interval": 0,
+		"evaluation_delay": 900
+	},
+	"priority": null,
+	"restricted_roles": null
+}

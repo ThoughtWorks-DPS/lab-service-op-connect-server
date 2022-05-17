@@ -1,0 +1,258 @@
+{
+  "title": "EMPC op-connect",
+  "description": "[lab-service-op-connect](https://github.com/ThoughtWorks-DPS/lab-service-op-connect)",
+  "widgets": [
+    {
+      "definition": {
+        "title": "op-connect-api 4xx Errors",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "query3"
+              }
+            ],
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "query": "sum:aws.applicationelb.httpcode_target_4xx{$alb}.as_count()",
+                "data_source": "metrics",
+                "name": "query3"
+              }
+            ],
+            "style": {
+              "palette": "dog_classic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "bars"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 3,
+        "height": 2
+      }
+    },
+    {
+      "definition": {
+        "title": "op-connect-api 5xx Errors",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "query3"
+              }
+            ],
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "query": "sum:aws.applicationelb.httpcode_target_5xx{$alb}.as_count()",
+                "data_source": "metrics",
+                "name": "query3"
+              }
+            ],
+            "style": {
+              "palette": "dog_classic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "bars"
+          }
+        ]
+      },
+      "layout": {
+        "x": 3,
+        "y": 0,
+        "width": 3,
+        "height": 2
+      }
+    },
+    {
+      "definition": {
+        "title": "Avg Memory Utilization",
+        "title_size": "16",
+        "title_align": "left",
+        "type": "query_value",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ],
+            "response_format": "scalar",
+            "queries": [
+              {
+                "query": "avg:aws.ecs.service.memory_utilization{$clustername}",
+                "data_source": "metrics",
+                "name": "query1",
+                "aggregator": "avg"
+              }
+            ]
+          }
+        ],
+        "autoscale": true,
+        "precision": 2
+      },
+      "layout": {
+        "x": 6,
+        "y": 0,
+        "width": 2,
+        "height": 2
+      }
+    },
+    {
+      "definition": {
+        "title": "Avg CPU Utilization",
+        "title_size": "16",
+        "title_align": "left",
+        "type": "query_value",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ],
+            "response_format": "scalar",
+            "queries": [
+              {
+                "query": "avg:aws.ecs.service.cpuutilization{$clustername}",
+                "data_source": "metrics",
+                "name": "query1",
+                "aggregator": "avg"
+              }
+            ]
+          }
+        ],
+        "autoscale": true,
+        "precision": 2
+      },
+      "layout": {
+        "x": 8,
+        "y": 0,
+        "width": 2,
+        "height": 2
+      }
+    },
+    {
+      "definition": {
+        "title": "p99 response times",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ],
+            "response_format": "timeseries",
+            "queries": [
+              {
+                "query": "avg:aws.applicationelb.target_response_time.p99{$alb}",
+                "data_source": "metrics",
+                "name": "query1"
+              }
+            ],
+            "style": {
+              "palette": "dog_classic",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "line"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 2,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "definition": {
+        "title": "",
+        "title_size": "13",
+        "title_align": "left",
+        "type": "manage_status",
+        "summary_type": "monitors",
+        "display_format": "countsAndList",
+        "color_preference": "text",
+        "hide_zero_counts": true,
+        "show_last_triggered": false,
+        "show_priority": false,
+        "query": "tag:($alb)",
+        "sort": "status,asc",
+        "count": 50,
+        "start": 0
+      },
+      "layout": {
+        "x": 6,
+        "y": 2,
+        "width": 4,
+        "height": 4
+      }
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "alb",
+      "default": "op-connect-api-alb",
+      "prefix": "alb",
+      "available_values": []
+    },
+    {
+      "name": "clustername",
+      "default": "op-connect",
+      "prefix": "clustername",
+      "available_values": [
+        "op-connect",
+        "op-connect-sandbox"
+      ]
+    }
+  ],
+  "layout_type": "ordered",
+  "is_read_only": false,
+  "notify_list": [],
+  "reflow_type": "fixed",
+  "id": "zdb-as4-bc7"
+}

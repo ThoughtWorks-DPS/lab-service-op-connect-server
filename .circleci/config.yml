@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  terraform: twdps/terraform@dev:latest
+  terraform: twdps/terraform@0.5.0
   # used for github-release-notes feature
   executor-tools: twdps/executor-tools@0.3.0
 
@@ -42,6 +42,45 @@ commands:
           command: bash scripts/tf_backend.sh
 
 jobs:
+
+  update-dashboard:
+    parameters:
+      shell-options:
+        description: shell configuration shell-options
+        type: string
+    docker:
+      - image: << pipeline.parameters.executor-image >>
+    shell: << parameters.shell-options >>
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: update datadog cluster monitors
+          command: python scripts/deploy_monitors.py << parameters.env >> << parameters.cluster >> << parameters.instance >>
+
+  update-monitors:
+    parameters:
+      env:
+        description: which op-connect instance, sandbox or preview
+        type: string
+      instance:
+        description: tag\alb filters
+        type: string
+      cluster:
+        description: ecs-cluster where service runs
+        type: string
+      shell-options:
+        description: shell configuration shell-options
+        type: string
+    docker:
+      - image: << pipeline.parameters.executor-image >>
+    shell: << parameters.shell-options >>
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: update datadog dashboard
+          command: python scripts/deploy_dashboard.py
 
   account-level-credentials:
     parameters:
@@ -100,7 +139,20 @@ workflows:
           requires:
             - approve-sandbox-changes
           filters: *on-push-main
-        
+      
+      - update-dashboard:
+          context: twdps-core-lab-team
+          shell-options: op run --env-file op.env -- /bin/bash
+          filters: *on-push-main
+
+      - update-monitors:
+          env: sandbox
+          cluster: sandbox-op-connect
+          instance: sandbox-op-connect-api-alb
+          context: twdps-core-lab-team
+          shell-options: op run --env-file op.env -- /bin/bash
+          filters: *on-push-main
+
   lab-service-op-connect-server-preview:
     jobs:
       # production deployment, uses preview cluster network space
@@ -136,6 +188,22 @@ workflows:
             - set-environment
           requires:
             - approve-preview-changes
+          filters: *on-tag-main
+
+      - update-monitors:
+          env: preview
+          cluster: op-connect
+          instance: op-connect-api-alb
+          shell-options: op run --env-file op.env -- /bin/bash
+          filters: *on-tag-main
+
+  generate-release-notes:
+    jobs:
+      - executor-tools/release:
+          name: release-lab-service-op-connect
+          context: twdps-core-lab-team
+          shell: op run --env-file op.env -- /bin/bash
+          on-tag: true
           filters: *on-tag-main
 
 
