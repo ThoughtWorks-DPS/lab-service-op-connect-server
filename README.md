@@ -1,31 +1,74 @@
-# op-connect-server
+<div align="center">
+	<p>
+		<img alt="Thoughtworks Logo" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/thoughtworks_flamingo_wave.png?sanitize=true" width=200 />
+    <br />
+		<img alt="DPS Title" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/dps_lab_title.png" width=350/>
+	</p>
+  <h3>secrets automation server by 1password(c) </h3>
+  <h1>lab-service-op-connect-server</h1>
+  <a href="https://app.circleci.com/pipelines/github/ThoughtWorks-DPS/lab-service-op-connect-server"><img src="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server.svg?style=shield"></a>
+</div>
+<br />
 
-So far, tested two different deployment configurations - from examples in [Connect](https://github.com/1Password/connect) repo   
-1. ECS Fargate based on [example](example.yaml)  
-1. minikube. Following the dps local dev environment configuration  
+Secrethub has been used for a couple years in the DPS lab work. This is because, while it does have an excellent security model, more importantly:
+- It was a saas
+- Supports machine account access using a single, easily rotated token
+- Easily customized service account access permissions
+- CLI interface tuned for pipeline access (shell and template injection)
+- All of which means nearly no overhead to maintain and no bootstrapping required for greefield projects
 
-Have not been able to get either to work. The ECS method times out with no logged errors (useful or otherwise), and the local version returns a 404 for any uri.  
+Last year 1password purchased Secrethub and began the process of integrating the functionality into 1password itself. This has been an interesting process and is not yet fully complete. There are some significant differences in the initial release. And it isn't clear yet whether these differences are an intermediate step or part of a new product vision.  
 
-To deploy the kubernetes version you need a secretes.yaml in the following format:
+We do have a license for a component currently required for using the service in a pipeline in the manner we prefer.   
 
+Our secrets live in the "teams" 1password SaaS location, however you cannot pull them directly from there using any form of machine flow yet. Instead, you must deploy your own instance of a combination datasync and 1password api service released by 1password.  
+
+From the 1password website interface you can generate a unique credential file used by the datasync service to enble it to pull a continuously updated copy of the cloud-stored secrets into it's runtime memory. Then, via the API service, and using a long-lived token also generated from the cloud interface, you can interact with those secrets.  
+
+The 1password cli (`op`) can be used to access this API as well as an available SDK. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CUD cli to simplify create, update, delete from within a pipeline.  
+
+This repository pipeline manages a test and production instance of the service tied to the empc-lab and empc-lab-test vaults in the twdps.1password.com teams vault space, resprectively.  
+
+This are live services, available on:  
+
+https://sandbox.op.twdpw.digital
+https://op.twdps.digital  
+
+Simply specifify the twdps-core-lab-team context for the 1password connect server to be accessible within any circleci pipeline.  
+
+Using this service (for read) provides the same functionality as secrethub. Both .env files or injections into templates are supported:  
+
+The 1password v2 command line tool must be installed.  
+
+If you want to experiment directly with the API (from your workstation), you can genereate your own token from the website.  
+
+**as bash parameter**
 ```
-apiVersion: v1
-kind: Secret
-metadata:
-  name: credentials
-  namespace: op-connect-local
-type: Opaque
-data:
-  1password-credentials.json: <contents of 1password.credentials.json in base64>
+$ op -env-file=<filename> -- /bin/bash
+```
+**or for injection template**  
+```
+$ op inject -i <template filename> -o <result filename>
+```
+
+New secret path naming structure:  
+```
+op://<vault>/<item>/<field>
+```
+
+E.g.; in a op.env file to use with bash parameter injection:  
+```
+export DOCKER_LOGIN=op://empc-lab/svc-github/username
+export DOCKER_PASSWORD=op://empc-lab/svc-github/access-token
+export SNYK_TOKEN=op://empc-lab/svc-snyk/api-token
+export COSIGN_PASSWORD=op://empc-lab/svc-cosign/passphrase
 ```
 
 # development
 
-- assumes no secrets bootstrap service, just circleci context ENV vars
+Bootstrap-style pipeline:  
+
+- terraform-cloud for state
+- assumes no secrets mgmt service, just circleci context ENV vars
 - assumes use of existing platform-vpc
 - assumes a base64 version of the 1password-credential.json for the server is available in the ENV
-
-OP_CONNECT_HOST=https://sandbox.op.twdps.digital
-OP_CONNECT_TOKEN=
-
-path example: op://empc-lab-test/test-secret/credential
