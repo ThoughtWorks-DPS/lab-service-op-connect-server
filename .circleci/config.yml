@@ -141,7 +141,7 @@ workflows:
           filters: *on-push-main
       
       - update-dashboard:
-          context: twdps-core-lab-team
+          context: twdps-core-labs-team
           shell-options: op run --env-file op.env -- /bin/bash
           filters: *on-push-main
 
@@ -150,7 +150,7 @@ workflows:
           env: sandbox
           cluster: sandbox-op-connect
           instance: sandbox-op-connect-api-alb
-          context: twdps-core-lab-team
+          context: twdps-core-labs-team
           shell-options: op run --env-file op.env -- /bin/bash
           filters: *on-push-main
 
@@ -196,6 +196,7 @@ workflows:
           env: preview
           cluster: op-connect
           instance: op-connect-api-alb
+          context: twdps-core-labs-team
           shell-options: op run --env-file op.env -- /bin/bash
           filters: *on-tag-main
 
@@ -203,7 +204,7 @@ workflows:
     jobs:
       - executor-tools/release:
           name: release-lab-service-op-connect
-          context: twdps-core-lab-team
+          context: twdps-core-labs-team
           shell: op run --env-file op.env -- /bin/bash
           on-tag: true
           filters: *on-tag-main
