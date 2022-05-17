@@ -146,6 +146,7 @@ workflows:
           filters: *on-push-main
 
       - update-monitors:
+          name: update-sandbox-monitors
           env: sandbox
           cluster: sandbox-op-connect
           instance: sandbox-op-connect-api-alb
@@ -191,6 +192,7 @@ workflows:
           filters: *on-tag-main
 
       - update-monitors:
+          name: update-preview-monitors
           env: preview
           cluster: op-connect
           instance: op-connect-api-alb
