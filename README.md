@@ -27,18 +27,18 @@ From the 1password website interface you can generate a unique credential file u
 
 The 1password cli (`op`) can be used to access this API as well as an available SDK. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CUD cli to simplify create, update, delete from within a pipeline.  
 
-This repository pipeline manages a test and production instance of the service tied to the empc-lab and empc-lab-test vaults in the twdps.1password.com teams vault space, resprectively.  
+This repository pipeline manages a test and production instance of the service tied to the empc-lab-lab and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
 
-This are live services, available on:  
+These are live services, available on:  
 
 https://sandbox.op.twdpw.digital
 https://op.twdps.digital  
 
-Simply specifify the twdps-core-lab-team context for the 1password connect server to be accessible within any circleci pipeline.  
+Simply specify the twdps-core-lab-team context for the 1password connect server to be accessible within any circleci pipeline.  
 
 Using this service (for read) provides the same functionality as secrethub. Both .env files or injections into templates are supported:  
 
-The 1password v2 command line tool must be installed.  
+The 1password/v2 command line tool must be installed.  
 
 If you want to experiment directly with the API (from your workstation), you can genereate your own token from the website.  
 
@@ -56,7 +56,7 @@ New secret path naming structure:
 op://<vault>/<item>/<field>
 ```
 
-E.g.; in a op.env file to use with bash parameter injection:  
+E.g., in a op.env file to use with bash parameter injection:  
 ```
 export DOCKER_LOGIN=op://empc-lab/svc-github/username
 export DOCKER_PASSWORD=op://empc-lab/svc-github/access-token
@@ -68,7 +68,7 @@ export COSIGN_PASSWORD=op://empc-lab/svc-cosign/passphrase
 
 Bootstrap-style pipeline:  
 
+- Based on a fargate ecs deployment, alb front end, acm certificates
 - terraform-cloud for state
-- assumes no secrets mgmt service, just circleci context ENV vars
+- assumes no secrets mgmt service, just circleci context ENV vars (including base64 version of the 1password-credential.json)
 - assumes use of existing platform-vpc
-- assumes a base64 version of the 1password-credential.json for the server is available in the ENV
