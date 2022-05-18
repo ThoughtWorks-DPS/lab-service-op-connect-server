@@ -25,13 +25,13 @@ Our secrets live in the "teams" 1password SaaS location, however you cannot pull
 
 From the 1password website interface you can generate a unique credential file used by the datasync service to enble it to pull a continuously updated copy of the cloud-stored secrets into it's runtime memory. Then, via the API service, and using a long-lived token also generated from the cloud interface, you can interact with those secrets.  
 
-The 1password cli (`op`) can be used to access this API as well as an available SDK. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CUD cli to simplify create, update, delete from within a pipeline.  
+The 1password cli (`op`) can be used to access this API, and there are available SDKs for programmatic access. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CUD cli to simplify create, update, delete from within a pipeline.  
 
 This repository pipeline manages a test and production instance of the service tied to the empc-lab-lab and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
 
 These are live services, available on:  
 
-https://sandbox.op.twdpw.digital
+https://sandbox.op.twdpw.digital  
 https://op.twdps.digital  
 
 Simply specify the twdps-core-lab-team context for the 1password connect server to be accessible within any circleci pipeline.  
@@ -40,7 +40,7 @@ Using this service (for read) provides the same functionality as secrethub. Both
 
 The 1password/v2 command line tool must be installed.  
 
-If you want to experiment directly with the API (from your workstation), you can genereate your own token from the website.  
+If you want to experiment directly with the API, you can genereate your own token from the website.  
 
 **as bash parameter**
 ```
