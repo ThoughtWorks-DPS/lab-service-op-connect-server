@@ -1,5 +1,4 @@
 {
-	"id": 71798822,
 	"name": "EMPC {{ env }} op-connect ecs service down",
 	"type": "query alert",
 	"query": "avg(last_1h):sum:aws.ecs.services{cluster:{{ cluster }}} < 1",

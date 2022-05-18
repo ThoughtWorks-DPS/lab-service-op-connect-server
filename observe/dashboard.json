@@ -210,7 +210,7 @@
     },
     {
       "definition": {
-        "title": "",
+        "title": "Monitors",
         "title_size": "13",
         "title_align": "left",
         "type": "manage_status",

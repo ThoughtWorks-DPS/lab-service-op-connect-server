@@ -1,5 +1,4 @@
 {
-	"id": 71798060,
 	"name": "EMPC {{ env }} op-connect 5xx errors",
 	"type": "query alert",
 	"query": "sum(last_5m):sum:aws.applicationelb.httpcode_target_5xx{alb:{{ instance }}}.as_count() > 25",
