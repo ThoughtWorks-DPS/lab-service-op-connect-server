@@ -10,7 +10,7 @@ if [[ "${INSTANCE}" == "test" ]]; then
 fi
 
 cat <<EOF > integration_test.tpl
-{{ op://${VAULT}/integration-test/key }}
+{{ op://${VAULT}/op-integration-test/key }}
 EOF
 
 op inject -i integration_test.tpl -o integration_test.env
