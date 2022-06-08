@@ -246,7 +246,7 @@
       "prefix": "clustername",
       "available_values": [
         "op-connect",
-        "op-connect-sandbox"
+        "op-connect-test"
       ]
     }
   ],

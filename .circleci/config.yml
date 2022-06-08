@@ -91,6 +91,23 @@ jobs:
           command: |
             bash scripts/create_secrets_manager_entry.sh << parameters.instance>> << parameters.key >>
 
+  integration-test:
+    docker:
+      - image: << pipeline.parameters.executor-image >>
+    parameters:
+      instance:
+        description: instance identifier
+        type: string
+      vault:
+        description: vault from which to fetch test key/value
+        type: string
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: smoke test op-connect server
+          command: python scripts/tf_backend.sh << parameters.instance >> << parameters.vault >>
+
 workflows:
   version: 2
 
@@ -132,7 +149,14 @@ workflows:
           requires:
             - approve-changes-to-test-instance
           filters: *on-push-main
-      
+
+      - integration-test:
+          instance: test
+          vault: empc-lab-test
+          requires:
+            - apply-changes-to-test-instance
+          filters: *on-push-main
+
       - update-dashboard:
           context: twdps-core-labs-team
           filters: *on-push-main
@@ -140,7 +164,7 @@ workflows:
       - update-monitors:
           name: update-test-instance-monitors
           env: test
-          cluster: test-op-connect
+          cluster: op-connect-test
           instance: test-op-connect-api-alb
           context: twdps-core-labs-team
           filters: *on-push-main
@@ -180,6 +204,13 @@ workflows:
             - set-environment
           requires:
             - approve-changes-to-prod-instance
+          filters: *on-tag-main
+
+      - integration-test:
+          instance: test
+          vault: empc-lab-test
+          equires:
+            - apply-changes-to-prod-instance
           filters: *on-tag-main
 
       - update-monitors:
