@@ -4,9 +4,9 @@ import sys
 import requests
 
 
-# env = preview, sandbox
-# cluster = op-connect, sandbox-op-connect
-# instance = op-connect-api-alb, sandbox-op-connect-api-alb
+# env = test, prod
+# cluster = op-connect, test-op-connect
+# instance = op-connect-api-alb, test-op-connect-api-alb
 
 env = sys.argv[1]
 cluster = sys.argv[2]

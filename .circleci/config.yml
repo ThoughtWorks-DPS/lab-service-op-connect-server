@@ -107,13 +107,13 @@ workflows:
     jobs:
       # sandbox deployment
       - account-level-credentials:
-          name: test-account-credentials
+          name: account-credentials-for-test-instance
           instance: test
           key: "test-op-connect-credential-file"
           filters: *on-push-main
 
       - terraform/plan:
-          name: test-change-plan
+          name: change-plan-for-test-instance
           workspace: test
           var-file: environments/test.json
           extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
@@ -121,17 +121,17 @@ workflows:
           before-terraform:
             - set-environment
           requires:
-            - test-account-credentials
+            - account-credentials-for-test-instance
           filters: *on-push-main
 
-      - approve-test-changes:
+      - approve-changes-to-test-instance:
           type: approval
           requires:
-            - test-change-plan
+            - change-plan-for-test-instance
           filters: *on-push-main
 
       - terraform/apply:
-          name: apply-test-changes
+          name: apply-changes-to-test-instance
           workspace: test
           var-file: environments/test.json
           extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
@@ -139,63 +139,61 @@ workflows:
           before-terraform:
             - set-environment
           requires:
-            - approve-test-changes
+            - approve-changes-to-test-instance
           filters: *on-push-main
       
-      # - update-dashboard:
-      #     context: twdps-core-labs-team
-      #     shell-options: op run --env-file op.env -- /bin/bash
-      #     filters: *on-push-main
+      - update-dashboard:
+          context: twdps-core-labs-team
+          filters: *on-push-main
 
-      # - update-monitors:
-      #     name: update-sandbox-monitors
-      #     env: sandbox
-      #     cluster: sandbox-op-connect
-      #     instance: sandbox-op-connect-api-alb
-      #     context: twdps-core-labs-team
-      #     shell-options: op run --env-file op.env -- /bin/bash
-      #     filters: *on-push-main
+      - update-monitors:
+          name: update-test-instance-monitors
+          env: test
+          cluster: test-op-connect
+          instance: test-op-connect-api-alb
+          context: twdps-core-labs-team
+          filters: *on-push-main
 
-  # lab-service-op-connect-server-preview:
+  # deploy-prod-instance:
   #   jobs:
   #     # production deployment, uses preview cluster network space
   #     - account-level-credentials:
-  #         name: preview-account-credentials
-  #         instance: preview
+  #         name: account-credentials-for-prod-instance
+  #         instance: prod
   #         key: "op-connect-credential-file"
   #         filters: *on-tag-main
 
   #     - terraform/plan:
-  #         name: preview-change-plan
-  #         workspace: preview
-  #         var-file: environments/preview.json
+  #         name: change-plan-for-prod-instance
+  #         workspace: prod
+  #         var-file: environments/prod.json
   #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
   #         terraform-version: << pipeline.parameters.terraform-version >>
   #         before-terraform:
   #           - set-environment
   #         filters: *on-tag-main
 
-  #     - approve-preview-changes:
+  #     - approve-changes-to-prod-instance:
   #         type: approval
   #         requires:
-  #           - preview-change-plan
+  #           - change-plan-for-prod-instance
   #         filters: *on-tag-main
 
   #     - terraform/apply:
-  #         name: apply-preview-changes
-  #         workspace: preview
-  #         var-file: environments/preview.json
+  #         name: apply-changes-to-prod-instance
+  #         workspace: prod
+  #         var-file: environments/prod.json
   #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
   #         terraform-version: << pipeline.parameters.terraform-version >>
   #         before-terraform:
   #           - set-environment
   #         requires:
-  #           - approve-preview-changes
+  #           - approve-changes-to-prod-instance
   #         filters: *on-tag-main
 
   #     - update-monitors:
-  #         name: update-preview-monitors
-  #         env: preview
+  #         name: update-prod-instance-monitors
+  #         env: prod
   #         cluster: op-connect
   #         instance: op-connect-api-alb
   #         context: twdps-core-labs-team
@@ -232,18 +230,18 @@ workflows:
             - approve-test-teardown
           filters: *on-push-main
 
-      # - approve-preview-teardown:
-      #     type: approval
-      #     filters: *on-push-main
+      - approve-prod-teardown:
+          type: approval
+          filters: *on-push-main
 
-      # - terraform/destroy:
-      #     name: delete-preview-op-connect-server-resources
-      #     workspace: preview
-      #     var-file: environments/preview.json
-      #     extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-      #     terraform-version: << pipeline.parameters.terraform-version >>
-      #     before-terraform:
-      #       - set-environment
-      #     requires:
-      #       - approve-preview-teardown
-      #     filters: *on-push-main
+      - terraform/destroy:
+          name: delete-prod-op-connect-server-resources
+          workspace: prod
+          var-file: environments/preprodview.json
+          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+          terraform-version: << pipeline.parameters.terraform-version >>
+          before-terraform:
+            - set-environment
+          requires:
+            - approve-prod-teardown
+          filters: *on-push-main
