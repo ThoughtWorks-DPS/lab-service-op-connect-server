@@ -64,12 +64,8 @@ jobs:
       cluster:
         description: ecs-cluster where service runs
         type: string
-      shell-options:
-        description: shell configuration shell-options
-        type: string
     docker:
       - image: << pipeline.parameters.executor-image >>
-    shell: << parameters.shell-options >>
     steps:
       - checkout
       - setup_remote_docker
