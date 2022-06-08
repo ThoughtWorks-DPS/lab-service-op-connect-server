@@ -106,7 +106,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: smoke test op-connect server
-          command: python scripts/test_server.sh << parameters.instance >> << parameters.vault >>
+          command: bash scripts/test_server.sh << parameters.instance >> << parameters.vault >>
 
 workflows:
   version: 2

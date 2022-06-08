@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -o pipefail
+
 export INSTANCE=$1
 export VAULT=$2
 
