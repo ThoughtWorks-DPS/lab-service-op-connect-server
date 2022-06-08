@@ -4,7 +4,7 @@ version: 2.1
 orbs:
   terraform: twdps/terraform@0.5.0
   # used for github-release-notes feature
-  executor-tools: twdps/executor-tools@0.4.0
+  executor-tools: twdps/executor-tools@0.8.0
 
 # ==== global pipeline parameters
 
@@ -12,11 +12,11 @@ parameters:
   terraform-version:
     description: terraform version for all jobs
     type: string
-    default: "1.1.9"
+    default: "1.2.2"
   executor-image:
     description: image to use for terraform runs
     type: string
-    default: twdps/circleci-infra-aws:alpine-1.6.0
+    default: twdps/circleci-infra-aws:alpine-1.7.0
 
 # git push: deploy sandbox
 on-push-main: &on-push-main
@@ -107,107 +107,109 @@ workflows:
     jobs:
       # sandbox deployment
       - account-level-credentials:
-          name: nonprod-account-credentials
-          instance: sandbox
-          key: "sandbox-op-connect-credential-file"
+          name: test-account-credentials
+          instance: test
+          key: "test-op-connect-credential-file"
           filters: *on-push-main
 
       - terraform/plan:
-          name: sandbox-change-plan
-          workspace: sandbox
-          var-file: environments/sandbox.json
-          extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
+          name: test-change-plan
+          workspace: test
+          var-file: environments/test.json
+          extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
           terraform-version: << pipeline.parameters.terraform-version >>
           before-terraform:
             - set-environment
+          requires:
+            - test-account-credentials
           filters: *on-push-main
 
-      - approve-sandbox-changes:
+      - approve-test-changes:
           type: approval
           requires:
-            - sandbox-change-plan
+            - test-change-plan
           filters: *on-push-main
 
       - terraform/apply:
-          name: apply-sandbox-changes
-          workspace: sandbox
-          var-file: environments/sandbox.json
-          extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
+          name: apply-test-changes
+          workspace: test
+          var-file: environments/test.json
+          extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
           terraform-version: << pipeline.parameters.terraform-version >>
           before-terraform:
             - set-environment
           requires:
-            - approve-sandbox-changes
+            - approve-test-changes
           filters: *on-push-main
       
-      - update-dashboard:
-          context: twdps-core-labs-team
-          shell-options: op run --env-file op.env -- /bin/bash
-          filters: *on-push-main
+      # - update-dashboard:
+      #     context: twdps-core-labs-team
+      #     shell-options: op run --env-file op.env -- /bin/bash
+      #     filters: *on-push-main
 
-      - update-monitors:
-          name: update-sandbox-monitors
-          env: sandbox
-          cluster: sandbox-op-connect
-          instance: sandbox-op-connect-api-alb
-          context: twdps-core-labs-team
-          shell-options: op run --env-file op.env -- /bin/bash
-          filters: *on-push-main
+      # - update-monitors:
+      #     name: update-sandbox-monitors
+      #     env: sandbox
+      #     cluster: sandbox-op-connect
+      #     instance: sandbox-op-connect-api-alb
+      #     context: twdps-core-labs-team
+      #     shell-options: op run --env-file op.env -- /bin/bash
+      #     filters: *on-push-main
 
-  lab-service-op-connect-server-preview:
-    jobs:
-      # production deployment, uses preview cluster network space
-      - account-level-credentials:
-          name: preview-account-credentials
-          instance: preview
-          key: "op-connect-credential-file"
-          filters: *on-tag-main
+  # lab-service-op-connect-server-preview:
+  #   jobs:
+  #     # production deployment, uses preview cluster network space
+  #     - account-level-credentials:
+  #         name: preview-account-credentials
+  #         instance: preview
+  #         key: "op-connect-credential-file"
+  #         filters: *on-tag-main
 
-      - terraform/plan:
-          name: preview-change-plan
-          workspace: preview
-          var-file: environments/preview.json
-          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-          terraform-version: << pipeline.parameters.terraform-version >>
-          before-terraform:
-            - set-environment
-          filters: *on-tag-main
+  #     - terraform/plan:
+  #         name: preview-change-plan
+  #         workspace: preview
+  #         var-file: environments/preview.json
+  #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+  #         terraform-version: << pipeline.parameters.terraform-version >>
+  #         before-terraform:
+  #           - set-environment
+  #         filters: *on-tag-main
 
-      - approve-preview-changes:
-          type: approval
-          requires:
-            - preview-change-plan
-          filters: *on-tag-main
+  #     - approve-preview-changes:
+  #         type: approval
+  #         requires:
+  #           - preview-change-plan
+  #         filters: *on-tag-main
 
-      - terraform/apply:
-          name: apply-preview-changes
-          workspace: preview
-          var-file: environments/preview.json
-          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-          terraform-version: << pipeline.parameters.terraform-version >>
-          before-terraform:
-            - set-environment
-          requires:
-            - approve-preview-changes
-          filters: *on-tag-main
+  #     - terraform/apply:
+  #         name: apply-preview-changes
+  #         workspace: preview
+  #         var-file: environments/preview.json
+  #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+  #         terraform-version: << pipeline.parameters.terraform-version >>
+  #         before-terraform:
+  #           - set-environment
+  #         requires:
+  #           - approve-preview-changes
+  #         filters: *on-tag-main
 
-      - update-monitors:
-          name: update-preview-monitors
-          env: preview
-          cluster: op-connect
-          instance: op-connect-api-alb
-          context: twdps-core-labs-team
-          shell-options: op run --env-file op.env -- /bin/bash
-          filters: *on-tag-main
+  #     - update-monitors:
+  #         name: update-preview-monitors
+  #         env: preview
+  #         cluster: op-connect
+  #         instance: op-connect-api-alb
+  #         context: twdps-core-labs-team
+  #         shell-options: op run --env-file op.env -- /bin/bash
+  #         filters: *on-tag-main
 
-  generate-release-notes:
-    jobs:
-      - executor-tools/release:
-          name: release-lab-service-op-connect
-          context: twdps-core-labs-team
-          shell: op run --env-file op.env -- /bin/bash
-          on-tag: true
-          filters: *on-tag-main
+  # generate-release-notes:
+  #   jobs:
+  #     - executor-tools/release:
+  #         name: release-lab-service-op-connect
+  #         context: twdps-core-labs-team
+  #         shell: op run --env-file op.env -- /bin/bash
+  #         on-tag: true
+  #         filters: *on-tag-main
 
 
   # uncomment this workflow to do a full teardown of either instance
@@ -230,18 +232,18 @@ workflows:
             - approve-sandbox-teardown
           filters: *on-push-main
 
-      - approve-preview-teardown:
-          type: approval
-          filters: *on-push-main
+      # - approve-preview-teardown:
+      #     type: approval
+      #     filters: *on-push-main
 
-      - terraform/destroy:
-          name: delete-preview-op-connect-server-resources
-          workspace: preview
-          var-file: environments/preview.json
-          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-          terraform-version: << pipeline.parameters.terraform-version >>
-          before-terraform:
-            - set-environment
-          requires:
-            - approve-preview-teardown
-          filters: *on-push-main
+      # - terraform/destroy:
+      #     name: delete-preview-op-connect-server-resources
+      #     workspace: preview
+      #     var-file: environments/preview.json
+      #     extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+      #     terraform-version: << pipeline.parameters.terraform-version >>
+      #     before-terraform:
+      #       - set-environment
+      #     requires:
+      #       - approve-preview-teardown
+      #     filters: *on-push-main

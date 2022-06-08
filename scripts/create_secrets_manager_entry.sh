@@ -11,7 +11,7 @@ export AWS_ASSUME_ROLE=$(cat environments/$INSTANCE.json | jq -r .aws_assume_rol
 export AWS_ACCOUNT_ID=$(cat environments/$INSTANCE.json | jq -r .aws_account_id)
 
 # assumes base credentials are set in the ENV
-aws sts assume-role --output json --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/$AWS_ASSUME_ROLE --role-session-name op-connect > credentials
+aws sts assume-role --output json --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/$AWS_ASSUME_ROLE --role-session-name lab-service-op-connect-server > credentials
 
 export AWS_ACCESS_KEY_ID=$(cat credentials | jq -r ".Credentials.AccessKeyId")
 export AWS_SECRET_ACCESS_KEY=$(cat credentials | jq -r ".Credentials.SecretAccessKey")
