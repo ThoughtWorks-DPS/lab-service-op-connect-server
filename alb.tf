@@ -32,7 +32,7 @@ module "alb" {
     {
       port               = 443
       protocol           = "HTTPS"
-      certificate_arn    = aws_acm_certificate_validation.op_twdps_digital_certificate.certificate_arn
+      certificate_arn    = aws_acm_certificate_validation.op_twdps_io_certificate.certificate_arn
       target_group_index = 0
     }
   ]
@@ -88,7 +88,7 @@ module "alb_sg" {
 }
 
 # create certificate
-resource "aws_acm_certificate" "op_twdps_digital" {
+resource "aws_acm_certificate" "op_twdps_io" {
   domain_name       = var.op_connect_url
   validation_method = "DNS"
 }
@@ -98,9 +98,9 @@ data "aws_route53_zone" "hosted_zone" {
   private_zone = false
 }
 
-resource "aws_route53_record" "op_twdps_digital_validation" {
+resource "aws_route53_record" "op_twdps_io_validation" {
   for_each = {
-    for dvo in aws_acm_certificate.op_twdps_digital.domain_validation_options : dvo.domain_name => {
+    for dvo in aws_acm_certificate.op_twdps_io.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
@@ -115,17 +115,17 @@ resource "aws_route53_record" "op_twdps_digital_validation" {
   zone_id         = data.aws_route53_zone.hosted_zone.zone_id
 }
 
-resource "aws_acm_certificate_validation" "op_twdps_digital_certificate" {
-  certificate_arn         = aws_acm_certificate.op_twdps_digital.arn
-  validation_record_fqdns = [for record in aws_route53_record.op_twdps_digital_validation : record.fqdn]
+resource "aws_acm_certificate_validation" "op_twdps_io_certificate" {
+  certificate_arn         = aws_acm_certificate.op_twdps_io.arn
+  validation_record_fqdns = [for record in aws_route53_record.op_twdps_io_validation : record.fqdn]
 }
 
-resource "aws_route53_record" "op_twdps_digital" {
+resource "aws_route53_record" "op_twdps_io" {
   zone_id = data.aws_route53_zone.hosted_zone.zone_id
   name    = var.op_connect_url
   type    = "CNAME"
   ttl     = "300"
   records = [module.alb.lb_dns_name]
 
-  depends_on = [aws_route53_record.op_twdps_digital_validation, module.alb]
+  depends_on = [aws_route53_record.op_twdps_io_validation, module.alb]
 }

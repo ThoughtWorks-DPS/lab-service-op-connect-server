@@ -31,8 +31,8 @@ This repository pipeline manages a test and production instance of the service t
 
 These are live services, available on:  
 
-https://sandbox.op.twdpw.digital  
-https://op.twdps.digital  
+https://test.op.twdpw.io  
+https://op.twdps.io  
 
 Simply specify the twdps-core-lab-team context for the 1password connect server to be accessible within any circleci pipeline.  
 
