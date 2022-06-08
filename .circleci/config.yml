@@ -216,20 +216,20 @@ workflows:
   
   lab-service-op-connect-server-teardown:
     jobs:
-      - approve-sandbox-teardown:
+      - approve-test-teardown:
           type: approval
           filters: *on-push-main
 
       - terraform/destroy:
-          name: delete-sandbox-op-connect-server-resources
-          workspace: sandbox
-          var-file: environments/sandbox.json
-          extra-terraform-args: -var="op_credentials_file_base64=${SANDBOX_OP_CREDENTIAL_FILE_BASE64}"
+          name: delete-test-op-connect-server-resources
+          workspace: test
+          var-file: environments/test.json
+          extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
           terraform-version: << pipeline.parameters.terraform-version >>
           before-terraform:
             - set-environment
           requires:
-            - approve-sandbox-teardown
+            - approve-test-teardown
           filters: *on-push-main
 
       # - approve-preview-teardown:
