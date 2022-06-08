@@ -103,7 +103,7 @@ jobs:
 workflows:
   version: 2
 
-  lab-service-op-connect-server-sandbox:
+  deploy-test-instance:
     jobs:
       # sandbox deployment
       - account-level-credentials:
