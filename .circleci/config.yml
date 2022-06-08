@@ -145,51 +145,50 @@ workflows:
           context: twdps-core-labs-team
           filters: *on-push-main
 
-  # deploy-prod-instance:
-  #   jobs:
-  #     # production deployment, uses preview cluster network space
-  #     - account-level-credentials:
-  #         name: account-credentials-for-prod-instance
-  #         instance: prod
-  #         key: "op-connect-credential-file"
-  #         filters: *on-tag-main
+  deploy-prod-instance:
+    jobs:
+      # production deployment
+      - account-level-credentials:
+          name: account-credentials-for-prod-instance
+          instance: prod
+          key: "op-connect-credential-file"
+          filters: *on-tag-main
 
-  #     - terraform/plan:
-  #         name: change-plan-for-prod-instance
-  #         workspace: prod
-  #         var-file: environments/prod.json
-  #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-  #         terraform-version: << pipeline.parameters.terraform-version >>
-  #         before-terraform:
-  #           - set-environment
-  #         filters: *on-tag-main
+      - terraform/plan:
+          name: change-plan-for-prod-instance
+          workspace: prod
+          var-file: environments/prod.json
+          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+          terraform-version: << pipeline.parameters.terraform-version >>
+          before-terraform:
+            - set-environment
+          filters: *on-tag-main
 
-  #     - approve-changes-to-prod-instance:
-  #         type: approval
-  #         requires:
-  #           - change-plan-for-prod-instance
-  #         filters: *on-tag-main
+      - approve-changes-to-prod-instance:
+          type: approval
+          requires:
+            - change-plan-for-prod-instance
+          filters: *on-tag-main
 
-  #     - terraform/apply:
-  #         name: apply-changes-to-prod-instance
-  #         workspace: prod
-  #         var-file: environments/prod.json
-  #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-  #         terraform-version: << pipeline.parameters.terraform-version >>
-  #         before-terraform:
-  #           - set-environment
-  #         requires:
-  #           - approve-changes-to-prod-instance
-  #         filters: *on-tag-main
+      - terraform/apply:
+          name: apply-changes-to-prod-instance
+          workspace: prod
+          var-file: environments/prod.json
+          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+          terraform-version: << pipeline.parameters.terraform-version >>
+          before-terraform:
+            - set-environment
+          requires:
+            - approve-changes-to-prod-instance
+          filters: *on-tag-main
 
-  #     - update-monitors:
-  #         name: update-prod-instance-monitors
-  #         env: prod
-  #         cluster: op-connect
-  #         instance: op-connect-api-alb
-  #         context: twdps-core-labs-team
-  #         shell-options: op run --env-file op.env -- /bin/bash
-  #         filters: *on-tag-main
+      - update-monitors:
+          name: update-prod-instance-monitors
+          env: prod
+          cluster: op-connect
+          instance: op-connect-api-alb
+          context: twdps-core-labs-team
+          filters: *on-tag-main
 
   # generate-release-notes:
   #   jobs:
