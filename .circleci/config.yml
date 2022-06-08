@@ -209,7 +209,7 @@ workflows:
       - integration-test:
           instance: test
           vault: empc-lab-test
-          equires:
+          requires:
             - apply-changes-to-prod-instance
           filters: *on-tag-main
 
