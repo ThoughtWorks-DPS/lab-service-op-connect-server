@@ -207,8 +207,8 @@ workflows:
           filters: *on-tag-main
 
       - integration-test:
-          instance: test
-          vault: empc-lab-test
+          instance: prod
+          vault: empc-lab
           requires:
             - apply-changes-to-prod-instance
           filters: *on-tag-main
