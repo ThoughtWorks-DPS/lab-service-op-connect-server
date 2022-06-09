@@ -3,7 +3,7 @@ version: 2.1
 
 orbs:
   terraform: twdps/terraform@0.6.0
-  do: twdps/pipeline-events
+  do: twdps/pipeline-events@0.1.0
   # used for github-release-notes feature
   executor-tools: twdps/executor-tools@0.8.0
 
