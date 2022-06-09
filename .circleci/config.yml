@@ -232,37 +232,37 @@ workflows:
 
 
   # uncomment this workflow to do a full teardown of either instance
-  
-  lab-service-op-connect-server-teardown:
-    jobs:
-      - approve-test-teardown:
-          type: approval
-          filters: *on-push-main
+  #
+  # lab-service-op-connect-server-teardown:
+  #   jobs:
+  #     - approve-test-teardown:
+  #         type: approval
+  #         filters: *on-push-main
 
-      - terraform/destroy:
-          name: delete-test-op-connect-server-resources
-          workspace: test
-          var-file: environments/test.json
-          extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
-          terraform-version: << pipeline.parameters.terraform-version >>
-          before-terraform:
-            - set-environment
-          requires:
-            - approve-test-teardown
-          filters: *on-push-main
+  #     - terraform/destroy:
+  #         name: delete-test-op-connect-server-resources
+  #         workspace: test
+  #         var-file: environments/test.json
+  #         extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
+  #         terraform-version: << pipeline.parameters.terraform-version >>
+  #         before-terraform:
+  #           - set-environment
+  #         requires:
+  #           - approve-test-teardown
+  #         filters: *on-push-main
 
-      - approve-prod-teardown:
-          type: approval
-          filters: *on-push-main
+  #     - approve-prod-teardown:
+  #         type: approval
+  #         filters: *on-push-main
 
-      - terraform/destroy:
-          name: delete-prod-op-connect-server-resources
-          workspace: prod
-          var-file: environments/preprodview.json
-          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-          terraform-version: << pipeline.parameters.terraform-version >>
-          before-terraform:
-            - set-environment
-          requires:
-            - approve-prod-teardown
-          filters: *on-push-main
+  #     - terraform/destroy:
+  #         name: delete-prod-op-connect-server-resources
+  #         workspace: prod
+  #         var-file: environments/preprodview.json
+  #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
+  #         terraform-version: << pipeline.parameters.terraform-version >>
+  #         before-terraform:
+  #           - set-environment
+  #         requires:
+  #           - approve-prod-teardown
+  #         filters: *on-push-main
