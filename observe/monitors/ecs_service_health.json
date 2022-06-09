@@ -2,7 +2,7 @@
 	"name": "EMPC {{ env }} op-connect ecs service down",
 	"type": "query alert",
 	"query": "avg(last_1h):sum:aws.ecs.services{cluster:{{ cluster }}} < 1",
-	"message": "@slack-DPS-lab-preview-alerts",
+	"message": "@slack-DPS-lab-{{ env }}-alerts connect-api service down in {{ env }} ECS cluster",
 	"tags": [
 		"alb:{{ instance }}"
 	],
