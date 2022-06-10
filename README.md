@@ -10,6 +10,7 @@
 </div>
 <br />
 
+
 Secrethub has been used for a couple years in the DPS lab work. This is because, while it does have an excellent security model, more importantly:
 - It was a saas
 - Supports machine account access using a single, easily rotated token
