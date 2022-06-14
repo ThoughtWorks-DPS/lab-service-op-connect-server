@@ -28,7 +28,7 @@ From the 1password website interface you can generate a unique credential file u
 
 The 1password cli (`op`) can be used to access this API, and there are available SDKs for programmatic access. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CUD cli to simplify create, update, delete from within a pipeline.  
 
-This repository pipeline manages a test and production instance of the service tied to the empc-lab-lab and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
+This repository pipeline manages a test and production instance of the service, running in DPS-1 and tied to the empc-lab-lab and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
 
 These are live services, available on:  
 
@@ -67,9 +67,11 @@ export COSIGN_PASSWORD=op://empc-lab/svc-cosign/passphrase
 
 # development
 
+![basic architecture](https://github.com/ThoughtWorks-DPS/lab-service-op-connect-server/blob/master/doc/op-architecture.png)
+
 Bootstrap-style pipeline:  
 
 - Based on a fargate ecs deployment, alb front end, acm certificates
 - terraform-cloud for state
-- assumes no secrets mgmt service, just circleci context ENV vars (including base64 version of the 1password-credential.json)
-- assumes use of existing platform-vpc
+- assumes no secrets mgmt service, just circleci pipeline ENV vars (including base64 version of the 1password-credential.json)
+

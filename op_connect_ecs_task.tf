@@ -37,7 +37,7 @@ resource "aws_ecs_service" "op_connect_api_service" {
 
   network_configuration {
     security_groups  = [module.op_connect_sg.security_group_id]
-    subnets          = data.aws_subnets.private.ids
+    subnets          = module.vpc.private_subnets
     assign_public_ip = false
   }
 
@@ -53,12 +53,12 @@ resource "aws_ecs_service" "op_connect_api_service" {
 # =================================================================================================
 # ECS task execution role
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "${var.platform_vpc_name}LabOPConnectTaskRole"
+  name               = "${var.vpc_name}LabOPConnectTaskRole"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role_policy.json
 }
 
 resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name        = "${var.platform_vpc_name}LabOPConnectTaskRolePolicy"
+  name        = "${var.vpc_name}LabOPConnectTaskRolePolicy"
 
   policy = <<EOF
 {
@@ -118,15 +118,15 @@ module "op_connect_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.9.0"
 
-  name        = "${var.platform_vpc_name}-task-ssg"
-  vpc_id      = data.aws_vpc.platform_vpc.id
+  name        = "${var.vpc_name}-task-sg"
+  vpc_id      = module.vpc.vpc_id
 
   ingress_with_cidr_blocks = [
     {
       from_port   = var.connect_api_port
       to_port     = var.connect_api_port
       protocol    = "tcp"
-      cidr_blocks = join(",", local.public_cidrs)
+      cidr_blocks = join(",", module.vpc.public_subnets_cidr_blocks)
     }
   ]
 

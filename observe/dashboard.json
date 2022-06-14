@@ -267,7 +267,7 @@
       "prefix": "clustername",
       "available_values": [
         "op-connect",
-        "op-connect-test"
+        "test-op-connect"
       ]
     }
   ],

@@ -2,8 +2,7 @@
   "aws_region": "us-east-1",
   "aws_account_id": "481538974648",
   "aws_assume_role": "DPSTerraformRole",
-  "platform_vpc_name": "prod",
-  "ecs-cluster-name": "op-connect-test",
+  "ecs-cluster-name": "test-op-connect",
   "capacity_providers": ["FARGATE_SPOT","FARGATE"],
   "default_capacity_provider": "FARGATE_SPOT",
   "hosted_zone": "twdps.io",
@@ -15,5 +14,11 @@
   "connect_sync_version": "1.5.2",
   "connect_credential_secret_name": "test-op-connect-credential-file",
   "connect_cpu": "256",
-  "connect_ram": "512"
+  "connect_ram": "512",
+  
+  "vpc_name": "test-op-connect-vpc",
+  "vpc_cidr": "10.40.0.0/16",
+  "vpc_azs": ["us-east-1a","us-east-1b","us-east-1c"],
+  "vpc_private_subnets": ["10.40.0.0/28", "10.40.0.16/28", "10.40.0.32/28"],
+  "vpc_public_subnets": ["10.40.0.48/28", "10.40.0.64/28", "10.40.0.80/28"]
 }

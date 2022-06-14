@@ -170,7 +170,7 @@ workflows:
       - update-monitors:
           name: update-test-instance-monitors
           env: test
-          cluster: op-connect-test
+          cluster: test-op-connect
           instance: test-op-connect-api-alb
           context: twdps-core-labs-team
           filters: *on-push-main

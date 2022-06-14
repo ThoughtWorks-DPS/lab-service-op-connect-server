@@ -6,8 +6,8 @@ module "alb" {
 
   load_balancer_type = "application"
 
-  vpc_id             = data.aws_vpc.platform_vpc.id
-  subnets            = data.aws_subnets.public.ids
+  vpc_id             = module.vpc.vpc_id
+  subnets            = module.vpc.public_subnets
   security_groups    = [module.alb_sg.security_group_id]
 
   target_groups = [
@@ -59,8 +59,8 @@ module "alb_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.9.0"
 
-  name        = "${var.platform_vpc_name}-alb-sg"
-  vpc_id      = data.aws_vpc.platform_vpc.id
+  name        = "${var.vpc_name}-alb-sg"
+  vpc_id      = module.vpc.vpc_id
 
   ingress_with_cidr_blocks = [
     {

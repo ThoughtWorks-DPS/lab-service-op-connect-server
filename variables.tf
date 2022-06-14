@@ -2,7 +2,11 @@ variable "aws_region" {}
 variable "aws_account_id" {}
 variable "aws_assume_role" {}
 
-variable "platform_vpc_name" {}
+variable "vpc_name" {}
+variable "vpc_cidr" {}
+variable "vpc_azs" {}
+variable "vpc_private_subnets" {}
+variable "vpc_public_subnets" {}
 
 variable "ecs-cluster-name" {}
 variable "capacity_providers" {}
