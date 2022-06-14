@@ -112,17 +112,17 @@ jobs:
 workflows:
   version: 2
 
-  deploy-test-instance:
+  deploy test instance:
     jobs:
       # sandbox deployment
       - account-level-credentials:
-          name: account-credentials-for-test-instance
+          name: account credentials for test instance
           instance: test
           key: "test-op-connect-credential-file"
           filters: *on-push-main
 
       - terraform/plan:
-          name: change-plan-for-test-instance
+          name: change plan for test instance
           workspace: test
           var-file: environments/test.json
           extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
@@ -130,17 +130,17 @@ workflows:
           before-terraform:
             - set-environment
           requires:
-            - account-credentials-for-test-instance
+            - account credentials for test instance
           filters: *on-push-main
 
-      - approve-changes-to-test-instance:
+      - approve changes to test instance:
           type: approval
           requires:
-            - change-plan-for-test-instance
+            - change plan for test instance
           filters: *on-push-main
 
       - terraform/apply:
-          name: apply-changes-to-test-instance
+          name: apply changes to test instance
           workspace: test
           var-file: environments/test.json
           extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
@@ -153,14 +153,15 @@ workflows:
                 message: lab-service-op-connect-server test instance deployment
                 webhook-url: $LAB_EVENTS_CHANNEL_WEBHOOK
           requires:
-            - approve-changes-to-test-instance
+            - approve changes to test instance
           filters: *on-push-main
 
       - integration-test:
+          name: test instance integration tests
           instance: test
           vault: empc-lab-test
           requires:
-            - apply-changes-to-test-instance
+            - apply changes to test instance
           filters: *on-push-main
 
       - update-dashboard:
@@ -168,40 +169,42 @@ workflows:
           filters: *on-push-main
 
       - update-monitors:
-          name: update-test-instance-monitors
+          name: update test instance monitors
           env: test
           cluster: test-op-connect
           instance: test-op-connect-api-alb
           context: twdps-core-labs-team
           filters: *on-push-main
 
-  deploy-prod-instance:
+  release prod instance:
     jobs:
       # production deployment
       - account-level-credentials:
-          name: account-credentials-for-prod-instance
+          name: account credentials for prod instance
           instance: prod
           key: "op-connect-credential-file"
           filters: *on-tag-main
 
       - terraform/plan:
-          name: change-plan-for-prod-instance
+          name: change plan for prod instance
           workspace: prod
           var-file: environments/prod.json
           extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
           terraform-version: << pipeline.parameters.terraform-version >>
           before-terraform:
             - set-environment
+          requires: 
+            - account credentials for prod instance
           filters: *on-tag-main
 
-      - approve-changes-to-prod-instance:
+      - approve changes to prod instance:
           type: approval
           requires:
-            - change-plan-for-prod-instance
+            - change plan for prod instance
           filters: *on-tag-main
 
       - terraform/apply:
-          name: apply-changes-to-prod-instance
+          name: apply changes to prod instance
           workspace: prod
           var-file: environments/prod.json
           extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
@@ -214,18 +217,19 @@ workflows:
                 message: lab-service-op-connect-server production release
                 webhook-url: $LAB_EVENTS_CHANNEL_WEBHOOK
           requires:
-            - approve-changes-to-prod-instance
+            - approve changes to prod instance
           filters: *on-tag-main
 
       - integration-test:
+          name: prod instance integration tests
           instance: prod
           vault: empc-lab
           requires:
-            - apply-changes-to-prod-instance
+            - apply changes to prod instance
           filters: *on-tag-main
 
       - update-monitors:
-          name: update-prod-instance-monitors
+          name: update prod instance monitors
           env: prod
           cluster: op-connect
           instance: op-connect-api-alb
