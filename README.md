@@ -72,7 +72,7 @@ export COSIGN_PASSWORD=op://empc-lab/svc-cosign/passphrase
 
 # development
 
-![basic architecture](https://github.com/ThoughtWorks-DPS/lab-service-op-connect-server/blob/master/doc/op-architecture.png)
+![basic architecture](https://github.com/ThoughtWorks-DPS/lab-service-op-connect-server/blob/main/doc/op-architecture.png)
 
 Bootstrap-style pipeline:  
 
