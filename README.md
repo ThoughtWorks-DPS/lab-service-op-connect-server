@@ -2,11 +2,11 @@
 	<p>
 		<img alt="Thoughtworks Logo" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/thoughtworks_flamingo_wave.png?sanitize=true" width=200 />
     <br />
-		<img alt="DPS Title" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/dps_lab_title.png" width=350/>
+		<img alt="DPS Title" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/EMPCPlatformStarterKitsImage.png" width=350/>
 	</p>
   <h3>secrets automation server by 1password(c) </h3>
   <h1>lab-service-op-connect-server</h1>
-  <a href="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main"><img src="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main.svg?style=shield&circle-token=5b62dee56a1690eca5a15b8a3ca555f098c306ad"> <a href="https://app.datadoghq.com/dashboard/zdb-as4-bc7/empc-op-connect?from_ts=1652802104947&to_ts=1652888504947&live=true"><img src="https://img.shields.io/badge/DataDog-Dasboard-lightgrey"></a>
+  <a href="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main"><img src="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main.svg?style=shield&circle-token=5b62dee56a1690eca5a15b8a3ca555f098c306ad"> <a href="https://app.datadoghq.com/dashboard/zdb-as4-bc7/empc-op-connect?from_ts=1652802104947&to_ts=1652888504947&live=true"><img src="https://img.shields.io/badge/DataDog-Dashboard-lightgrey"></a>
 </div>
 <br />
 
