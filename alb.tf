@@ -57,7 +57,7 @@ module "alb" {
 
 module "alb_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "4.9.0"
+  version = "4.13.1"
 
   name        = "${var.vpc_name}-alb-sg"
   vpc_id      = module.vpc.vpc_id

@@ -116,7 +116,7 @@ data "aws_iam_policy_document" "ecs_task_execution_role_policy" {
 # Traffic to the ECS cluster should only come from the ALB
 module "op_connect_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "4.9.0"
+  version = "4.13.1"
 
   name        = "${var.vpc_name}-task-sg"
   vpc_id      = module.vpc.vpc_id
