@@ -13,9 +13,9 @@
   "connect_api_port": "8080",
   "connect_sync_version": "1.5.7",
   "connect_credential_secret_name": "op-connect-credential-file",
-  "connect_cpu": "512",
+  "connect_cpu": "256",
   "connect_ram": "512",
-    
+
   "vpc_name": "op-connect-vpc",
   "vpc_cidr": "10.41.0.0/16",
   "vpc_azs": ["us-east-1a","us-east-1b","us-east-1c"],
