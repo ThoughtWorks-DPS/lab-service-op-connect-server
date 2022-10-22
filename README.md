@@ -10,30 +10,27 @@
 </div>
 <br />
 
-# Note for usage of 1Password Connect in the DI Platform Starter Kit
-
-It is unlikely when deploying the DI Platform Starter Kit at a client site, that they will be utilizing 1Password as their secrets manager. `op-connect-server` is used as an example, and to satisfy our current requirements for secrets management. This should highlight how the separate repositories inside the DI PSK can be used together, but components such as secrets management, would need to be swapped out for something else.
-
 ## A bit of history and context
 
-Secrethub has been used for a couple years in the DPS lab work. This is because, while it does have an excellent security model, more importantly:
+Secrethub has been used for a couple years in the EMPC Platform Starter Kit lab work. While it does have an excellent security model, more importantly:  
+
 - It was a saas
-- Supports machine account access using a single, easily rotated token
-- Easily customized service account access permissions
+- Supports machine account access using a secure, easily rotated token
+- Customizable, RBAC service account access permissions
 - CLI interface tuned for pipeline access (shell and template injection)
-- All of which means nearly no overhead to maintain and no bootstrapping required for greefield projects
+- All of which means nearly no overhead to maintain and no bootstrapping required for greenfield projects
 
-Last year 1password purchased Secrethub and began the process of integrating the functionality into 1password itself. This has been an interesting process and is not yet fully complete. There are some significant differences in the initial release. And it isn't clear yet whether these differences are an intermediate step or part of a new product vision.  
+1password purchased Secrethub and began the process of integrating Secrethub functionality into the 1password SaaS. This has been an interesting process and is not yet fully complete. There are some important differences in the initial releases. It isn't clear yet whether these differences are an intermediate step or part of a new product vision.  
 
-We do have a license for a component currently required for using the service in a pipeline in the manner we prefer.   
+Currently the 1password Secrets Automation workflow service is required for using the service in a pipeline in the desired manner.  
 
-Our secrets live in the "teams" 1password SaaS location, however you cannot pull them directly from there using any form of machine flow yet. Instead, you must deploy your own instance of a combination datasync and 1password api service released by 1password.  
+Our secrets are maintained in the "teams" 1password SaaS storage, however you cannot pull them directly from there using any form of machine authorization flow yet. Instead, you must deploy your own instance of a combination datasync and 1password api service.  
 
-From the 1password website interface you can generate a unique credential file used by the datasync service to enble it to pull a continuously updated copy of the cloud-stored secrets into it's runtime memory. Then, via the API service, and using a long-lived token also generated from the cloud interface, you can interact with those secrets.  
+From the 1password website interface you can generate a unique credential file used by the datasync service to enble it to pull a continuously updated copy of the cloud-stored secrets into it's runtime memory. Then, via the API service, and using a long-lived token, also generated from the cloud interface, you can interact with those secrets.  
 
-The 1password cli (`op`) can be used to access this API, and there are available SDKs for programmatic access. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CRUD cli to simplify create, update, delete from within a pipeline.
+The 1password cli (`op`) can be used to access this API, and there are available SDKs for programmatic access. The cli is currently limited to the read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We have create a 1Password Secrets Automation [Write utility](https://github.com/ThoughtWorks-DPS/opw) to support storing secrets created from within infrastructure pipelines.
 
-This repository pipeline manages a test and production instance of the service, running in DPS-1 and tied to the empc-lab-lab and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
+This repository pipeline manages a test and production instance of the service, running in DPS-1 and tied to the empc-lab-test and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
 
 These are live services, available on:  
 
@@ -70,6 +67,11 @@ export SNYK_TOKEN=op://empc-lab/svc-snyk/api-token
 export COSIGN_PASSWORD=op://empc-lab/svc-cosign/passphrase
 ```
 
+
+# Note for usage of 1Password Connect in the DI Platform Starter Kit
+
+It is unlikely when employing the DI Platform Starter Kit at a client site, that they will be utilizing 1Password as their automated secrets manager, even though more than 1000,000 major business have purchased 1password for their general, employee-facing password manager. Given their growing success this may change in the future. Our continued use of 1password is based on their stated commitment to continue to provide the high-value capabilities previously available in Secrethub. Should they change this roadmap we would likely adopt a different solution.
+
 # development
 
 ![basic architecture](https://github.com/ThoughtWorks-DPS/lab-service-op-connect-server/blob/main/doc/op-architecture.png)
@@ -79,4 +81,3 @@ Bootstrap-style pipeline:
 - Based on a fargate ecs deployment, alb front end, acm certificates
 - terraform-cloud for state
 - assumes no secrets mgmt service, just circleci pipeline ENV vars (including base64 version of the 1password-credential.json)
-
