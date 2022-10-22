@@ -1,6 +1,6 @@
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "7.0.0"
+  version = "8.0.0"
 
   name = var.alb_name
 
