@@ -9,13 +9,13 @@
   "op_connect_url": "test.op.twdps.io",
   "alb_name": "test-op-connect-api-alb",
   "op_connect_target_group_name": "test-op-connect-api-target",
-  "connect_api_version": "1.5.2",
+  "connect_api_version": "1.5.7",
   "connect_api_port": "8080",
-  "connect_sync_version": "1.5.2",
+  "connect_sync_version": "1.5.7",
   "connect_credential_secret_name": "test-op-connect-credential-file",
   "connect_cpu": "256",
   "connect_ram": "512",
-  
+
   "vpc_name": "test-op-connect-vpc",
   "vpc_cidr": "10.40.0.0/16",
   "vpc_azs": ["us-east-1a","us-east-1b","us-east-1c"],
