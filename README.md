@@ -2,14 +2,19 @@
 	<p>
 		<img alt="Thoughtworks Logo" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/thoughtworks_flamingo_wave.png?sanitize=true" width=200 />
     <br />
-		<img alt="DPS Title" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/dps_lab_title.png" width=350/>
+		<img alt="DPS Title" src="https://raw.githubusercontent.com/ThoughtWorks-DPS/static/master/EMPCPlatformStarterKitsImage.png" width=350/>
 	</p>
   <h3>secrets automation server by 1password(c) </h3>
   <h1>lab-service-op-connect-server</h1>
-  <a href="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main"><img src="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main.svg?style=shield&circle-token=5b62dee56a1690eca5a15b8a3ca555f098c306ad"> <a href="https://app.datadoghq.com/dashboard/zdb-as4-bc7/empc-op-connect?from_ts=1652802104947&to_ts=1652888504947&live=true"><img src="https://img.shields.io/badge/DataDog-Dasboard-lightgrey"></a>
+  <a href="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main"><img src="https://circleci.com/gh/ThoughtWorks-DPS/lab-service-op-connect-server/tree/main.svg?style=shield&circle-token=5b62dee56a1690eca5a15b8a3ca555f098c306ad"> <a href="https://app.datadoghq.com/dashboard/zdb-as4-bc7/empc-op-connect?from_ts=1652802104947&to_ts=1652888504947&live=true"><img src="https://img.shields.io/badge/DataDog-Dashboard-lightgrey"></a>
 </div>
 <br />
 
+# Note for usage of 1Password Connect in the DI Platform Starter Kit
+
+It is unlikely when deploying the DI Platform Starter Kit at a client site, that they will be utilizing 1Password as their secrets manager. `op-connect-server` is used as an example, and to satisfy our current requirements for secrets management. This should highlight how the separate repositories inside the DI PSK can be used together, but components such as secrets management, would need to be swapped out for something else.
+
+## A bit of history and context
 
 Secrethub has been used for a couple years in the DPS lab work. This is because, while it does have an excellent security model, more importantly:
 - It was a saas
@@ -26,7 +31,7 @@ Our secrets live in the "teams" 1password SaaS location, however you cannot pull
 
 From the 1password website interface you can generate a unique credential file used by the datasync service to enble it to pull a continuously updated copy of the cloud-stored secrets into it's runtime memory. Then, via the API service, and using a long-lived token also generated from the cloud interface, you can interact with those secrets.  
 
-The 1password cli (`op`) can be used to access this API, and there are available SDKs for programmatic access. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CUD cli to simplify create, update, delete from within a pipeline.  
+The 1password cli (`op`) can be used to access this API, and there are available SDKs for programmatic access. Though, the cli is limited to read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We will obviously need to create a basic CRUD cli to simplify create, update, delete from within a pipeline.
 
 This repository pipeline manages a test and production instance of the service, running in DPS-1 and tied to the empc-lab-lab and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
 
@@ -67,7 +72,7 @@ export COSIGN_PASSWORD=op://empc-lab/svc-cosign/passphrase
 
 # development
 
-![basic architecture](https://github.com/ThoughtWorks-DPS/lab-service-op-connect-server/blob/master/doc/op-architecture.png)
+![basic architecture](https://github.com/ThoughtWorks-DPS/lab-service-op-connect-server/blob/main/doc/op-architecture.png)
 
 Bootstrap-style pipeline:  
 
