@@ -234,7 +234,7 @@ workflows:
 
   generate-release-notes:
     jobs:
-      - event/release-notes:
+      - do/release-notes:
           name: generate release notes
           context: twdps-core-labs-team
           shell: op run --env-file op.env -- /bin/bash
