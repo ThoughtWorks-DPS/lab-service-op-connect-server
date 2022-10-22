@@ -1,6 +1,6 @@
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-  version = "3.14.0"
+  version = "3.18.0"
   create_vpc = true
 
   name = var.vpc_name
@@ -29,4 +29,3 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 }
-
