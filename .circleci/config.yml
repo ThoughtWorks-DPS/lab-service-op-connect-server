@@ -232,14 +232,14 @@ workflows:
           context: twdps-core-labs-team
           filters: *on-tag-main
 
-  generate-release-notes:
-    jobs:
-      - do/release-notes:
-          name: generate release notes
-          context: twdps-core-labs-team
-          shell: op run --env-file op.env -- /bin/bash
-          on-tag: true
-          filters: *on-tag-main
+  # generate-release-notes:
+  #   jobs:
+  #     - do/release-notes:
+  #         name: generate release notes
+  #         context: twdps-core-labs-team
+  #         shell: op run --env-file op.env -- /bin/bash
+  #         on-tag: true
+  #         filters: *on-tag-main
 
 
   # uncomment this workflow to do a full teardown of either instance
