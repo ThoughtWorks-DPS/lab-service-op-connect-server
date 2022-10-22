@@ -3,9 +3,7 @@ version: 2.1
 
 orbs:
   terraform: twdps/terraform@0.6.0
-  do: twdps/pipeline-events@0.1.0
-  # used for github-release-notes feature
-  executor-tools: twdps/executor-tools@0.8.0
+  do: twdps/pipeline-events@0.2.0
 
 # ==== global pipeline parameters
 
@@ -19,14 +17,14 @@ parameters:
     type: string
     default: twdps/circleci-infra-aws:alpine-1.7.0
 
-# git push: deploy sandbox
+# ==== triggers
+
 on-push-main: &on-push-main
   branches:
     only: /main/
   tags:
     ignore: /.*/
 
-# git tag: release to preview cluster
 on-tag-main: &on-tag-main
   branches:
     ignore: /.*/
@@ -114,7 +112,6 @@ workflows:
 
   deploy test instance:
     jobs:
-      # sandbox deployment
       - account-level-credentials:
           name: account credentials for test instance
           instance: test
@@ -178,7 +175,6 @@ workflows:
 
   release prod instance:
     jobs:
-      # production deployment
       - account-level-credentials:
           name: account credentials for prod instance
           instance: prod
@@ -193,7 +189,7 @@ workflows:
           terraform-version: << pipeline.parameters.terraform-version >>
           before-terraform:
             - set-environment
-          requires: 
+          requires:
             - account credentials for prod instance
           filters: *on-tag-main
 
@@ -236,14 +232,14 @@ workflows:
           context: twdps-core-labs-team
           filters: *on-tag-main
 
-  # generate-release-notes:
-  #   jobs:
-  #     - executor-tools/release:
-  #         name: release-lab-service-op-connect
-  #         context: twdps-core-labs-team
-  #         shell: op run --env-file op.env -- /bin/bash
-  #         on-tag: true
-  #         filters: *on-tag-main
+  generate-release-notes:
+    jobs:
+      - event/release-notes:
+          name: generate release notes
+          context: twdps-core-labs-team
+          shell: op run --env-file op.env -- /bin/bash
+          on-tag: true
+          filters: *on-tag-main
 
 
   # uncomment this workflow to do a full teardown of either instance
