@@ -239,7 +239,7 @@ workflows:
           name: account credentials for cohorts instance
           instance: cohorts
           key: "cohorts-op-connect-credential-file"
-          filters: *on-push-main
+          filters: *on-tag-main
 
       - terraform/plan:
           name: change plan for cohorts instance
@@ -251,13 +251,13 @@ workflows:
             - set-environment
           requires:
             - account credentials for cohorts instance
-          filters: *on-push-main
+          filters: *on-tag-main
 
       - approve changes to cohorts instance:
           type: approval
           requires:
             - change plan for cohorts instance
-          filters: *on-push-main
+          filters: *on-tag-main
 
       - terraform/apply:
           name: apply changes to cohorts instance
@@ -274,7 +274,7 @@ workflows:
                 webhook-url: $LAB_EVENTS_CHANNEL_WEBHOOK
           requires:
             - approve changes to cohorts instance
-          filters: *on-push-main
+          filters: *on-tag-main
 
       - integration-test:
           name: cohorts instance integration tests
@@ -282,7 +282,7 @@ workflows:
           vault: cohorts
           requires:
             - apply changes to cohorts instance
-          filters: *on-push-main
+          filters: *on-tag-main
 
       - update-monitors:
           name: update cohorts instance monitors
@@ -290,7 +290,7 @@ workflows:
           cluster: cohorts-op-connect
           instance: cohorts-op-connect-api-alb
           context: twdps-core-labs-team
-          filters: *on-push-main
+          filters: *on-tag-main
 
   # generate-release-notes:
   #   jobs:
