@@ -9,6 +9,11 @@ if [[ "${INSTANCE}" == "test" ]]; then
   export OP_CONNECT_TOKEN=${TEST_OP_CONNECT_TOKEN}
 fi
 
+if [[ "${INSTANCE}" == "cohort" ]]; then
+  export OP_CONNECT_HOST=https://cohort.op.twdps.io
+  export OP_CONNECT_TOKEN=${COHORT_OP_CONNECT_TOKEN}
+fi
+
 cat <<EOF > integration_test.tpl
 {{ op://${VAULT}/op-integration-test/key }}
 EOF

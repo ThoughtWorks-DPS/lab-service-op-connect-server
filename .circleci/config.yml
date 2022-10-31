@@ -56,7 +56,7 @@ jobs:
   update-monitors:
     parameters:
       env:
-        description: which op-connect instance, sandbox or preview
+        description: which op-connect instance
         type: string
       instance:
         description: tag\alb filters
@@ -233,6 +233,65 @@ workflows:
           context: twdps-core-labs-team
           filters: *on-tag-main
 
+  release cohort instance:
+    jobs:
+      - account-level-credentials:
+          name: account credentials for cohorts instance
+          instance: cohorts
+          key: "cohorts-op-connect-credential-file"
+          filters: *on-push-main
+
+      - terraform/plan:
+          name: change plan for cohorts instance
+          workspace: cohorts
+          var-file: environments/cohorts.json
+          extra-terraform-args: -var="op_credentials_file_base64=${COHORTS_OP_CREDENTIAL_FILE_BASE64}"
+          # terraform-version: << pipeline.parameters.terraform-version >>
+          before-terraform:
+            - set-environment
+          requires:
+            - account credentials for cohorts instance
+          filters: *on-push-main
+
+      - approve changes to cohorts instance:
+          type: approval
+          requires:
+            - change plan for cohorts instance
+          filters: *on-push-main
+
+      - terraform/apply:
+          name: apply changes to cohorts instance
+          workspace: cohorts
+          var-file: environments/cohorts.json
+          extra-terraform-args: -var="op_credentials_file_base64=${COHORTS_OP_CREDENTIAL_FILE_BASE64}"
+          # terraform-version: << pipeline.parameters.terraform-version >>
+          before-terraform:
+            - set-environment
+          after-terraform:
+            - do/circle-deploy
+            - do/slack-webhook:
+                message: lab-service-op-connect-server cohorts release
+                webhook-url: $LAB_EVENTS_CHANNEL_WEBHOOK
+          requires:
+            - approve changes to cohorts instance
+          filters: *on-push-main
+
+      - integration-test:
+          name: cohorts instance integration tests
+          instance: cohorts
+          vault: cohorts
+          requires:
+            - apply changes to cohorts instance
+          filters: *on-push-main
+
+      - update-monitors:
+          name: update cohorts instance monitors
+          env: cohorts
+          cluster: cohorts-op-connect
+          instance: cohorts-op-connect-api-alb
+          context: twdps-core-labs-team
+          filters: *on-push-main
+
   # generate-release-notes:
   #   jobs:
   #     - do/release-notes:
@@ -270,11 +329,23 @@ workflows:
   #     - terraform/destroy:
   #         name: delete-prod-op-connect-server-resources
   #         workspace: prod
-  #         var-file: environments/preprodview.json
+  #         var-file: environments/prod.json
   #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
   #         terraform-version: << pipeline.parameters.terraform-version >>
   #         before-terraform:
   #           - set-environment
   #         requires:
   #           - approve-prod-teardown
+  #         filters: *on-push-main
+
+  #     - terraform/destroy:
+  #         name: delete-cohort-op-connect-server-resources
+  #         workspace: cohort
+  #         var-file: environments/cohort.json
+  #         extra-terraform-args: -var="op_credentials_file_base64=${COHORT_OP_CREDENTIAL_FILE_BASE64}"
+  #         terraform-version: << pipeline.parameters.terraform-version >>
+  #         before-terraform:
+  #           - set-environment
+  #         requires:
+  #           - approve-cohort-teardown
   #         filters: *on-push-main

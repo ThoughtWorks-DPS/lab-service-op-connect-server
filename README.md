@@ -30,12 +30,13 @@ From the 1password website interface you can generate a unique credential file u
 
 The 1password cli (`op`) can be used to access this API, and there are available SDKs for programmatic access. The cli is currently limited to the read functions outlined below. In order to write new or changed secret info, only direct use of the api is currently supported. We have create a 1Password Secrets Automation [Write utility](https://github.com/ThoughtWorks-DPS/opw) to support storing secrets created from within infrastructure pipelines.
 
-This repository pipeline manages a test and production instance of the service, running in DPS-1 and tied to the empc-lab-test and empc-lab vaults in the twdps.1password.com teams vault space, resprectively.  
+This repository pipeline manages a test, production, and cohorts instance of the service, running in DPS-1 and tied to the empc-lab-test, empc-lab, and cohorts vaults in the twdps.1password.com teams vault space, resprectively.  
 
 These are live services, available on:  
 
 https://test.op.twdpw.io  
 https://op.twdps.io  
+https://cohorts.op.twdps.io  
 
 Simply specify the twdps-core-lab-team context for the 1password connect server to be accessible within any circleci pipeline.  
 
@@ -81,3 +82,5 @@ Bootstrap-style pipeline:
 - Based on a fargate ecs deployment, alb front end, acm certificates
 - terraform-cloud for state
 - assumes no secrets mgmt service, just circleci pipeline ENV vars (including base64 version of the 1password-credential.json)
+
+When setting up a new instance, you must first create the new vault in twdps.1password.com and then either connect it to an existing integration or define a new integration. Integrations will generate api-access tokens for the vault, and configuration.json files used by the ECS secrets server instance to communicate with 1password.com. After obtaining the new token and credentials.json, place these into the empc-lab vault, along with a base64 encoded version of the credentials.json file. And add the token and base64 version of credentials,json to the pipeline ENV variables.  
