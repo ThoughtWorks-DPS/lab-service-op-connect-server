@@ -9,7 +9,7 @@ if [[ "${INSTANCE}" == "test" ]]; then
   export OP_CONNECT_TOKEN=${TEST_OP_CONNECT_TOKEN}
 fi
 
-if [[ "${INSTANCE}" == "cohort" ]]; then
+if [[ "${INSTANCE}" == "cohorts" ]]; then
   export OP_CONNECT_HOST=https://cohort.op.twdps.io
   export OP_CONNECT_TOKEN=${COHORT_OP_CONNECT_TOKEN}
 fi
