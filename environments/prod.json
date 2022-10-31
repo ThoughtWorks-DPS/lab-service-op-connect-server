@@ -15,6 +15,7 @@
   "connect_credential_secret_name": "op-connect-credential-file",
   "connect_cpu": "256",
   "connect_ram": "512",
+  "listener_ssl_policy": "ELBSecurityPolicy-TLS-1-1-2017-01",
 
   "vpc_name": "op-connect-vpc",
   "vpc_cidr": "10.41.0.0/16",

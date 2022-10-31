@@ -27,3 +27,4 @@ variable "connect_sync_version" {}
 variable "connect_credential_secret_name" {}
 variable "connect_cpu" {}
 variable "connect_ram" {}
+variable "listener_ssl_policy" {}

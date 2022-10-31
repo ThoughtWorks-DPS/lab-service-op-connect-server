@@ -10,7 +10,7 @@ if [[ "${INSTANCE}" == "test" ]]; then
 fi
 
 if [[ "${INSTANCE}" == "cohorts" ]]; then
-  export OP_CONNECT_HOST=https://cohort.op.twdps.io
+  export OP_CONNECT_HOST=https://cohorts.op.twdps.io
   export OP_CONNECT_TOKEN=${COHORT_OP_CONNECT_TOKEN}
 fi
 
