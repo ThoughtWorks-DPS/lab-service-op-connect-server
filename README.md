@@ -84,3 +84,5 @@ Bootstrap-style pipeline:
 - assumes no secrets mgmt service, just circleci pipeline ENV vars (including base64 version of the 1password-credential.json)
 
 When setting up a new instance, you must first create the new vault in twdps.1password.com and then either connect it to an existing integration or define a new integration. Integrations will generate api-access tokens for the vault, and configuration.json files used by the ECS secrets server instance to communicate with 1password.com. After obtaining the new token and credentials.json, place these into the empc-lab vault, along with a base64 encoded version of the credentials.json file. And add the token and base64 version of credentials,json to the pipeline ENV variables.  
+
+Note: it can take a couple minutes for the new ecs tasks to come up and therefore the pipeline test can run prior to the services being available resulting in a test failure. Simply re-run from failed to get a successful test once the services are active. This should be refactored to introduce a delay to prevent the race-condition.
