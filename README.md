@@ -10,6 +10,8 @@
 </div>
 <br />
 
+# DEPRECATED. 1password now has service account access. The prod instance of the connect server will stay up for a bit while we convert pipelines to service accounts but the test and cohort instances are removed
+
 ## A bit of history and context
 
 Secrethub has been used for a couple years in the EMPC Platform Starter Kit lab work. While it does have an excellent security model, more importantly:  
