@@ -346,7 +346,7 @@ workflows:
       - terraform/destroy:
           name: delete-cohort-op-connect-server-resources
           workspace: cohorts
-          var-file: environments/cohort.json
+          var-file: environments/cohorts.json
           extra-terraform-args: -var="op_credentials_file_base64=${COHORT_OP_CREDENTIAL_FILE_BASE64}"
           #terraform-version: << pipeline.parameters.terraform-version >>
           executor-image: << pipeline.parameters.executor-image >>
