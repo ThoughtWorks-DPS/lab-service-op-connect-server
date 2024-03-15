@@ -306,22 +306,22 @@ workflows:
 
   lab-service-op-connect-server-teardown:
     jobs:
-      - approve-test-teardown:
-          type: approval
-          filters: *on-push-main
+      # - approve-test-teardown:
+      #     type: approval
+      #     filters: *on-push-main
 
-      - terraform/destroy:
-          name: delete-test-op-connect-server-resources
-          workspace: test
-          var-file: environments/test.json
-          extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
-          #terraform-version: << pipeline.parameters.terraform-version >>
-          executor-image: << pipeline.parameters.executor-image >>
-          before-terraform:
-            - set-environment
-          requires:
-            - approve-test-teardown
-          filters: *on-push-main
+      # - terraform/destroy:
+      #     name: delete-test-op-connect-server-resources
+      #     workspace: test
+      #     var-file: environments/test.json
+      #     extra-terraform-args: -var="op_credentials_file_base64=${TEST_OP_CREDENTIAL_FILE_BASE64}"
+      #     #terraform-version: << pipeline.parameters.terraform-version >>
+      #     executor-image: << pipeline.parameters.executor-image >>
+      #     before-terraform:
+      #       - set-environment
+      #     requires:
+      #       - approve-test-teardown
+      #     filters: *on-push-main
 
   #     - approve-prod-teardown:
   #         type: approval
@@ -345,7 +345,7 @@ workflows:
 
       - terraform/destroy:
           name: delete-cohort-op-connect-server-resources
-          workspace: cohort
+          workspace: cohorts
           var-file: environments/cohort.json
           extra-terraform-args: -var="op_credentials_file_base64=${COHORT_OP_CREDENTIAL_FILE_BASE64}"
           #terraform-version: << pipeline.parameters.terraform-version >>
