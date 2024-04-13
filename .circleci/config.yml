@@ -323,35 +323,34 @@ workflows:
       #       - approve-test-teardown
       #     filters: *on-push-main
 
-  #     - approve-prod-teardown:
-  #         type: approval
-  #         filters: *on-push-main
-
-  #     - terraform/destroy:
-  #         name: delete-prod-op-connect-server-resources
-  #         workspace: prod
-  #         var-file: environments/prod.json
-  #         extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
-  #         terraform-version: << pipeline.parameters.terraform-version >>
-  #         before-terraform:
-  #           - set-environment
-  #         requires:
-  #           - approve-prod-teardown
-  #         filters: *on-push-main
-
-      - approve-cohort-teardown:
+      - approve-prod-teardown:
           type: approval
           filters: *on-push-main
 
       - terraform/destroy:
-          name: delete-cohort-op-connect-server-resources
-          workspace: cohorts
-          var-file: environments/cohorts.json
-          extra-terraform-args: -var="op_credentials_file_base64=${COHORT_OP_CREDENTIAL_FILE_BASE64}"
-          #terraform-version: << pipeline.parameters.terraform-version >>
-          executor-image: << pipeline.parameters.executor-image >>
+          name: delete-prod-op-connect-server-resources
+          workspace: prod
+          var-file: environments/prod.json
+          extra-terraform-args: -var="op_credentials_file_base64=${OP_CREDENTIAL_FILE_BASE64}"
           before-terraform:
             - set-environment
           requires:
-            - approve-cohort-teardown
+            - approve-prod-teardown
           filters: *on-push-main
+
+      # - approve-cohort-teardown:
+      #     type: approval
+      #     filters: *on-push-main
+
+      # - terraform/destroy:
+      #     name: delete-cohort-op-connect-server-resources
+      #     workspace: cohorts
+      #     var-file: environments/cohorts.json
+      #     extra-terraform-args: -var="op_credentials_file_base64=${COHORT_OP_CREDENTIAL_FILE_BASE64}"
+      #     #terraform-version: << pipeline.parameters.terraform-version >>
+      #     executor-image: << pipeline.parameters.executor-image >>
+      #     before-terraform:
+      #       - set-environment
+      #     requires:
+      #       - approve-cohort-teardown
+      #     filters: *on-push-main
