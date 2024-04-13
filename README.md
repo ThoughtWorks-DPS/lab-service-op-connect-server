@@ -18,11 +18,6 @@ The 1password cli (`op`) can be used to access this API, and there are available
 
 This repository was previously used by TW EMPC NA to maintain a test and production instance of the service, and we continue to make this example available for past client or anyone interested in learning more about the automated, ECS-based management of 1password Connect servers.
 
-These services for formerly available on:  
-
-https://test.op.twdpw.io  
-https://op.twdps.io  
-
 # development
 
 ![basic architecture](https://github.com/ThoughtWorks-DPS/lab-service-op-connect-server/blob/main/doc/op-architecture.png)
